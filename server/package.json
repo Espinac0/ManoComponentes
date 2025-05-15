@@ -1,7 +1,7 @@
 {
-  "name": "mañocomponentes-server",
+  "name": "manocomponentes-server",
   "version": "1.0.0",
-  "description": "Backend para Mañocomponentes - Tienda de componentes de ordenador",
+  "description": "Backend para Manocomponentes - Tienda de componentes de ordenador",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
