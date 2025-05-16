@@ -19,6 +19,8 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Badge from '@mui/material/Badge';
 
 // Componentes personalizados
 import ComponentsMenu from './ComponentsMenu';
@@ -30,6 +32,8 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mainDrawerOpen, setMainDrawerOpen] = useState(false);
   const [componentsDrawerOpen, setComponentsDrawerOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [cartAnchorEl, setCartAnchorEl] = useState(null);
 
   // Función para cerrar los menús al hacer clic fuera
   const handleClickOutside = useCallback((event) => {
@@ -45,7 +49,45 @@ const Navbar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [handleClickOutside]);
+  
+  // Efecto para actualizar el contador del carrito
+  useEffect(() => {
+    // Función para actualizar el contador del carrito
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const count = cart.reduce((total, item) => total + item.quantity, 0);
+      setCartCount(count);
+    };
+    
+    // Actualizar el contador al cargar el componente
+    updateCartCount();
+    
+    // Escuchar el evento personalizado 'cartUpdated'
+    window.addEventListener('cartUpdated', updateCartCount);
+    
+    // Limpiar el listener al desmontar el componente
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
+  
   const navigate = useNavigate();
+  
+  // Función para manejar el clic en el icono del carrito
+  const handleCartClick = (event) => {
+    setCartAnchorEl(event.currentTarget);
+  };
+  
+  // Función para cerrar el menú del carrito
+  const handleCartClose = () => {
+    setCartAnchorEl(null);
+  };
+  
+  // Función para navegar a la página del carrito
+  const goToCart = () => {
+    handleCartClose();
+    navigate('/carrito');
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -140,6 +182,40 @@ const Navbar = () => {
           </Box>
 
           <Box sx={{ flexGrow: 1 }} />
+          
+          {/* Icono del carrito de compras */}
+          <IconButton
+            size="large"
+            aria-label="carrito de compras"
+            aria-controls="menu-cart"
+            aria-haspopup="true"
+            onClick={handleCartClick}
+            color="inherit"
+            sx={{ mr: 2 }}
+          >
+            <Badge badgeContent={cartCount} color="secondary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+          
+          {/* Menú desplegable del carrito */}
+          <Menu
+            id="menu-cart"
+            anchorEl={cartAnchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(cartAnchorEl)}
+            onClose={handleCartClose}
+          >
+            <MenuItem onClick={goToCart}>Ver carrito</MenuItem>
+          </Menu>
           
           {isAuthenticated ? (
             <div style={{ marginLeft: 'auto' }}>

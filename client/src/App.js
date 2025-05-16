@@ -2,6 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Home from './components/pages/Home';
+import ProductList from './components/pages/ProductList';
+import ComponentsPage from './components/pages/ComponentsPage';
+import CartPage from './components/pages/CartPage';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ProtectedAdminRoute from './components/auth/ProtectedAdminRoute';
@@ -39,6 +42,10 @@ const AppContent = () => {
       <Box component="main" sx={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/productos" element={<ProductList />} />
+          <Route path="/productos/:category" element={<ProductList />} />
+          <Route path="/componentes" element={<ComponentsPage />} />
+          <Route path="/carrito" element={<CartPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
