@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography, Container, Grid, Card, CardMedia, CardContent, CircularProgress, Button, CardActions } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 // Definir categorías predefinidas
 const categories = {
@@ -20,6 +22,8 @@ const ComponentsPage = () => {
   const [error, setError] = useState(null);
   const [cartMessage, setCartMessage] = useState('');
   const [showCartMessage, setShowCartMessage] = useState(false);
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -48,35 +52,20 @@ const ComponentsPage = () => {
     }
   }, [showCartMessage]);
 
-  // Función para añadir un producto al carrito
-  const addToCart = (component) => {
-    // Obtener el carrito actual del localStorage o inicializar uno nuevo
-    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
+  // Función para añadir un producto al carrito usando el contexto
+  const handleAddToCart = async (component) => {
+    // Usar el contexto para añadir al carrito
+    const success = await addToCart(component);
     
-    // Verificar si el producto ya está en el carrito
-    const existingItemIndex = currentCart.findIndex(item => item._id === component._id);
-    
-    if (existingItemIndex >= 0) {
-      // Si ya existe, incrementar la cantidad
-      currentCart[existingItemIndex].quantity += 1;
-      setCartMessage(`Se ha incrementado la cantidad de ${component.name} en el carrito`);
-    } else {
-      // Si no existe, añadirlo con cantidad 1
-      currentCart.push({
-        ...component,
-        quantity: 1
-      });
+    if (success) {
+      // Mostrar mensaje de confirmación
       setCartMessage(`${component.name} añadido al carrito`);
+      setShowCartMessage(true);
+    } else {
+      // Mostrar mensaje de error
+      setCartMessage('Error al añadir al carrito');
+      setShowCartMessage(true);
     }
-    
-    // Guardar el carrito actualizado en localStorage
-    localStorage.setItem('cart', JSON.stringify(currentCart));
-    
-    // Mostrar mensaje de confirmación
-    setShowCartMessage(true);
-    
-    // Disparar un evento personalizado para actualizar el contador del carrito
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
   };
 
   // Usar las categorías predefinidas definidas fuera del componente
@@ -223,7 +212,7 @@ const ComponentsPage = () => {
                         variant="contained" 
                         color="secondary" 
                         startIcon={<AddShoppingCartIcon />}
-                        onClick={() => addToCart(component)}
+                        onClick={() => handleAddToCart(component)}
                         fullWidth
                       >
                         Añadir al carrito

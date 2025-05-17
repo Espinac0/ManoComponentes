@@ -14,6 +14,9 @@ import ComponentForm from './components/admin/ComponentForm';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
+// Importar los proveedores de contexto
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 
 const theme = createTheme({
   palette: {
@@ -63,7 +66,11 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <AppContent />
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </AuthProvider>
       </Router>
     </ThemeProvider>
   );

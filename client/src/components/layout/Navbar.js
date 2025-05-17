@@ -50,26 +50,41 @@ const Navbar = () => {
     };
   }, [handleClickOutside]);
   
+  // Función para actualizar el contador del carrito (definida fuera del useEffect para poder llamarla desde otros lugares)
+  const updateCartCount = useCallback(() => {
+    // Obtener la clave del carrito según el usuario
+    const cartKey = isAuthenticated && userEmail ? `cart_${userEmail}` : 'cart_guest';
+    
+    // Obtener el carrito usando la clave correcta
+    const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    setCartCount(count);
+    console.log('Actualizando contador del carrito:', { cartKey, count });
+  }, [isAuthenticated, userEmail]);
+  
   // Efecto para actualizar el contador del carrito
   useEffect(() => {
-    // Función para actualizar el contador del carrito
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const count = cart.reduce((total, item) => total + item.quantity, 0);
-      setCartCount(count);
-    };
-    
-    // Actualizar el contador al cargar el componente
+    // Actualizar el contador al cargar el componente o cuando cambia el estado de autenticación
     updateCartCount();
     
     // Escuchar el evento personalizado 'cartUpdated'
     window.addEventListener('cartUpdated', updateCartCount);
     
-    // Limpiar el listener al desmontar el componente
+    // Monitorear cambios en localStorage
+    const handleStorageChange = (e) => {
+      if (e.key === 'cart_guest' || e.key?.startsWith('cart_')) {
+        updateCartCount();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Limpiar los listeners al desmontar el componente
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
+      window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [isAuthenticated, userEmail, updateCartCount]);
   
   const navigate = useNavigate();
   

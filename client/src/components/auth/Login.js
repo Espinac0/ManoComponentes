@@ -4,16 +4,17 @@ import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../services/api';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import { useAuth } from '../../context/AuthContext';
+import { syncCart } from '../../services/api';
 
 const Login = () => {
-  console.log('Renderizando Login');
-  console.log('Renderizando Login');
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
 
   const { email, password } = formData;
 
@@ -24,7 +25,6 @@ const Login = () => {
   };
 
   const onSubmit = async (e) => {
-    console.log('Intentando login...');
     e.preventDefault();
     setError('');
 
@@ -35,10 +35,20 @@ const Login = () => {
 
     try {
       const response = await login(formData);
-      // Guardar el token en localStorage
-      localStorage.setItem('token', response.token);
-      // Guardar el email del usuario
-      localStorage.setItem('userEmail', email);
+      
+      // Usar el contexto de autenticación para iniciar sesión
+      authLogin(response.token, email);
+      
+      // Sincronizar el carrito local con el servidor
+      try {
+        const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (localCart.length > 0) {
+          await syncCart(localCart);
+        }
+      } catch (syncError) {
+        console.error('Error al sincronizar el carrito:', syncError);
+      }
+      
       // Redirigir a la página principal
       navigate('/');
     } catch (err) {

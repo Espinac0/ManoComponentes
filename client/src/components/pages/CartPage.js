@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Container, 
   Typography, 
@@ -11,83 +11,34 @@ import {
   Button,
   Divider,
   TextField,
-  Paper
+  Paper,
+  CircularProgress
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const [total, setTotal] = useState(0);
-
-  // Cargar los items del carrito desde localStorage
-  useEffect(() => {
-    const loadCartItems = () => {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      setCartItems(cart);
-      
-      // Calcular el total
-      const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      setTotal(cartTotal);
-    };
-    
-    loadCartItems();
-  }, []);
-
-  // Actualizar el total cuando cambian los items del carrito
-  useEffect(() => {
-    const cartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    setTotal(cartTotal);
-  }, [cartItems]);
-
-  // Función para incrementar la cantidad de un item
-  const increaseQuantity = (itemId) => {
-    const updatedCart = cartItems.map(item => {
-      if (item._id === itemId) {
-        return { ...item, quantity: item.quantity + 1 };
-      }
-      return item;
-    });
-    
-    setCartItems(updatedCart);
-    updateLocalStorage(updatedCart);
-  };
-
-  // Función para decrementar la cantidad de un item
-  const decreaseQuantity = (itemId) => {
-    const updatedCart = cartItems.map(item => {
-      if (item._id === itemId && item.quantity > 1) {
-        return { ...item, quantity: item.quantity - 1 };
-      }
-      return item;
-    });
-    
-    setCartItems(updatedCart);
-    updateLocalStorage(updatedCart);
-  };
-
-  // Función para eliminar un item del carrito
-  const removeItem = (itemId) => {
-    const updatedCart = cartItems.filter(item => item._id !== itemId);
-    setCartItems(updatedCart);
-    updateLocalStorage(updatedCart);
-  };
-
-  // Función para actualizar el localStorage y disparar el evento de actualización
-  const updateLocalStorage = (cart) => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
-  };
+  const { cartItems, loading, increaseQuantity, decreaseQuantity, removeItem, clearCart, getTotal } = useCart();
+  const { isAuthenticated } = useAuth();
+  const [processingCheckout, setProcessingCheckout] = useState(false);
 
   // Función para procesar el pago (simulada)
-  const handleCheckout = () => {
-    alert('¡Gracias por tu compra! En un sistema real, aquí se procesaría el pago.');
-    // Limpiar el carrito después de la compra
-    setCartItems([]);
-    localStorage.removeItem('cart');
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
+  const handleCheckout = async () => {
+    setProcessingCheckout(true);
+    
+    // Simular un proceso de pago
+    setTimeout(async () => {
+      alert('¡Gracias por tu compra! En un sistema real, aquí se procesaría el pago.');
+      
+      // Limpiar el carrito después de la compra
+      await clearCart();
+      
+      setProcessingCheckout(false);
+    }, 1500);
   };
 
   return (
@@ -96,7 +47,11 @@ const CartPage = () => {
         Carrito de Compra
       </Typography>
 
-      {cartItems.length === 0 ? (
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : cartItems.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 8 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Tu carrito está vacío
@@ -170,7 +125,7 @@ const CartPage = () => {
               
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography>Subtotal</Typography>
-                <Typography>{total.toFixed(2)}€</Typography>
+                <Typography>{getTotal().toFixed(2)}€</Typography>
               </Box>
               
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -182,7 +137,7 @@ const CartPage = () => {
               
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
                 <Typography variant="h6">Total</Typography>
-                <Typography variant="h6" color="error">{total.toFixed(2)}€</Typography>
+                <Typography variant="h6" color="error">{getTotal().toFixed(2)}€</Typography>
               </Box>
               
               <Button 
@@ -190,10 +145,11 @@ const CartPage = () => {
                 color="secondary" 
                 fullWidth 
                 size="large"
-                startIcon={<ShoppingCartCheckoutIcon />}
+                startIcon={processingCheckout ? <CircularProgress size={24} color="inherit" /> : <ShoppingCartCheckoutIcon />}
                 onClick={handleCheckout}
+                disabled={processingCheckout}
               >
-                Finalizar Compra
+                {processingCheckout ? 'Procesando...' : 'Finalizar Compra'}
               </Button>
             </Paper>
           </Grid>
