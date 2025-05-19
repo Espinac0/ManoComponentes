@@ -5,7 +5,7 @@ const Home = () => {
   const featuredProducts = [
     {
       id: 1,
-      name: 'Procesador AMD Ryzen 7',
+      name: 'irenen adfjsadjsajdsad7',
       image: 'https://via.placeholder.com/300x200',
       description: 'Procesador de alta gama para gaming y trabajo profesional'
     },

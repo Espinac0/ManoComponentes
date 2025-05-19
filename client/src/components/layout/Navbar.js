@@ -164,7 +164,7 @@ const Navbar = () => {
 
   return (
     <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-      <AppBar position="static" sx={{ color: 'text.primary' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#ffffff', boxShadow: 2, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Box component={Link} to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
             <Box component="img" src="/logo.png" alt="Logo" sx={{ height: 85, mr: 2 }} />
@@ -293,6 +293,8 @@ const Navbar = () => {
           )}
         </Toolbar>
       </AppBar>
+      {/* Toolbar adicional para compensar el espacio de la AppBar fija */}
+      <Toolbar />
       <Box sx={{ 
         display: mainDrawerOpen ? 'flex' : 'none',
         position: 'absolute',

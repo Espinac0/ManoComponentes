@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Container, Grid, Card, CardMedia, CardContent, CircularProgress, Button, CardActions } from '@mui/material';
+import { Box, Typography, Container, Grid, Card, CardMedia, CardContent, CircularProgress, Button, CardActions, IconButton, Tooltip } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import LoginIcon from '@mui/icons-material/Login';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Definir categorías predefinidas
 const categories = {
@@ -22,8 +26,14 @@ const ComponentsPage = () => {
   const [error, setError] = useState(null);
   const [cartMessage, setCartMessage] = useState('');
   const [showCartMessage, setShowCartMessage] = useState(false);
+  // Estados para el carrusel por categoría
+  const [carouselIndexes, setCarouselIndexes] = useState({});
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  
+  // Número de componentes a mostrar por página en el carrusel
+  const maxItemsPerPage = 4;
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -54,6 +64,14 @@ const ComponentsPage = () => {
 
   // Función para añadir un producto al carrito usando el contexto
   const handleAddToCart = async (component) => {
+    // Verificar si el usuario está autenticado
+    if (!isAuthenticated) {
+      // Mostrar mensaje indicando que debe iniciar sesión
+      setCartMessage('Inicia sesión para añadir productos al carrito');
+      setShowCartMessage(true);
+      return;
+    }
+    
     // Usar el contexto para añadir al carrito
     const success = await addToCart(component);
     
@@ -169,17 +187,67 @@ const ComponentsPage = () => {
         Todos los Componentes
       </Typography>
 
-      {Object.entries(groupedComponents).map(([category, items]) => (
+      {Object.entries(groupedComponents).map(([category, items]) => {
         // Solo mostrar categorías que tengan componentes
-        items.length > 0 ? (
+        if (items.length === 0) return null;
+        
+        // Obtener el índice actual para esta categoría (o 0 si no existe)
+        const startIndex = carouselIndexes[category] || 0;
+        const hasMoreItems = items.length > startIndex + maxItemsPerPage;
+        const hasPreviousItems = startIndex > 0;
+        
+        // Función para avanzar al siguiente grupo de componentes
+        const handleNext = () => {
+          if (hasMoreItems) {
+            setCarouselIndexes({
+              ...carouselIndexes,
+              [category]: startIndex + maxItemsPerPage
+            });
+          }
+        };
+        
+        // Función para retroceder al grupo anterior de componentes
+        const handlePrevious = () => {
+          if (hasPreviousItems) {
+            setCarouselIndexes({
+              ...carouselIndexes,
+              [category]: Math.max(0, startIndex - maxItemsPerPage)
+            });
+          }
+        };
+        
+        // Obtener solo los componentes que se mostrarán en la página actual
+        const visibleItems = items.slice(startIndex, startIndex + maxItemsPerPage);
+        
+        return (
           <Box key={category} sx={{ mb: 6 }}>
-            <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2, fontWeight: 'bold' }}>
-              {getCategoryName(category)}
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h5" component="h2" sx={{ fontWeight: 'bold' }}>
+                {getCategoryName(category)}
+              </Typography>
+              <Box>
+                <IconButton 
+                  onClick={handlePrevious} 
+                  disabled={!hasPreviousItems}
+                  color="secondary"
+                  sx={{ opacity: hasPreviousItems ? 1 : 0.5 }}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+                <IconButton 
+                  onClick={handleNext} 
+                  disabled={!hasMoreItems}
+                  color="secondary"
+                  sx={{ opacity: hasMoreItems ? 1 : 0.5 }}
+                >
+                  <ArrowForwardIcon />
+                </IconButton>
+              </Box>
+            </Box>
             
             <Grid container spacing={3}>
-              {items.map((component) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={component._id}>
+              {visibleItems.map((component) => (
+                <Grid item xs={12} sm={6} md={6} lg={3} key={component._id}>
                   <Card 
                     sx={{ 
                       height: '100%', 
@@ -208,23 +276,25 @@ const ComponentsPage = () => {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button 
-                        variant="contained" 
-                        color="secondary" 
-                        startIcon={<AddShoppingCartIcon />}
-                        onClick={() => handleAddToCart(component)}
-                        fullWidth
-                      >
-                        Añadir al carrito
-                      </Button>
+                      <Tooltip title={isAuthenticated ? "Añadir al carrito" : "Inicia sesión para añadir al carrito"} arrow>
+                        <Button 
+                          variant="contained" 
+                          color="secondary" 
+                          startIcon={<AddShoppingCartIcon />}
+                          onClick={() => handleAddToCart(component)}
+                          fullWidth
+                        >
+                          Añadir al carrito
+                        </Button>
+                      </Tooltip>
                     </CardActions>
                   </Card>
                 </Grid>
               ))}
             </Grid>
           </Box>
-        ) : null
-      ))}
+        );
+      })}
     </Container>
   );
 };
