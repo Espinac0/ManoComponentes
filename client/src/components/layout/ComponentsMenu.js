@@ -14,36 +14,46 @@ import StorageIcon from '@mui/icons-material/Storage';
 import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
+import { useTheme } from '@mui/material/styles';
 
 const ComponentsMenu = ({ open, mainDrawerOpen }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  console.log('ComponentsMenu render:', { open, mainDrawerOpen });
   return (
-    <Drawer
-      variant="persistent"
-      anchor="left"
-      open={open && mainDrawerOpen}
-      PaperProps={{
-        sx: {
-          width: 250,
-          position: 'static',
-          borderLeft: 1,
-          borderColor: 'divider',
-          '& .MuiList-root': {
-            padding: 0
-          }
-        }
-      }}
+    <Box
+      id="components-menu"
       sx={{
         width: 250,
-        '& .MuiDrawer-paper': {
-          position: 'static'
+        position: 'fixed',
+        top: '64px',
+        left: '250px',
+        height: 'calc(100vh - 64px)',
+        backgroundColor: 'background.paper',
+        borderLeft: 1,
+        borderColor: 'divider',
+        overflowY: 'auto',
+        zIndex: 1200,
+        boxShadow: theme.shadows[5],
+        display: open && mainDrawerOpen ? 'block' : 'none',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'rgba(0,0,0,0.2)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-track': {
+          backgroundColor: 'rgba(0,0,0,0.05)',
         }
       }}
     >
       <Box
         sx={{ 
-          width: 250,
-          bgcolor: 'background.paper'
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column'
         }}
         role="presentation"
       >
@@ -206,7 +216,7 @@ const ComponentsMenu = ({ open, mainDrawerOpen }) => {
           </ListItem>
         </List>
       </Box>
-    </Drawer>
+    </Box>
   );
 };
 

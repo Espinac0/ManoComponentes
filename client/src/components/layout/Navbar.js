@@ -37,7 +37,12 @@ const Navbar = () => {
 
   // Función para cerrar los menús al hacer clic fuera
   const handleClickOutside = useCallback((event) => {
-    if (mainDrawerOpen && !event.target.closest('.MuiDrawer-root')) {
+    // Verificar si el clic fue fuera de los menús
+    const isClickOutsideMainMenu = !event.target.closest('#main-menu');
+    const isClickOutsideComponentsMenu = !event.target.closest('#components-menu');
+    
+    if (mainDrawerOpen && isClickOutsideMainMenu && isClickOutsideComponentsMenu) {
+      console.log('Clic fuera de los menús, cerrando...');
       setMainDrawerOpen(false);
       setComponentsDrawerOpen(false);
     }
@@ -295,49 +300,49 @@ const Navbar = () => {
       </AppBar>
       {/* Toolbar adicional para compensar el espacio de la AppBar fija */}
       <Toolbar />
-      <Box sx={{ 
-        display: mainDrawerOpen ? 'flex' : 'none',
-        position: 'absolute',
-        top: '85px',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        overflow: 'hidden',
-        zIndex: 100,
-        pointerEvents: mainDrawerOpen ? 'auto' : 'none'
-      }}>
+      {/* Contenedor para los menús */}
         {/* Drawer principal */}
-        <Drawer
-          variant="persistent"
-          anchor="left"
-          open={mainDrawerOpen}
-          onClose={() => {
-            setMainDrawerOpen(false);
-            setComponentsDrawerOpen(false);
-          }}
-          PaperProps={{
-            sx: {
-              width: 250,
-              position: 'static',
-              '& .MuiList-root': {
-                padding: 0
-              }
-            }
-          }}
+        <Box
+          id="main-menu"
           sx={{
             width: 250,
-            '& .MuiDrawer-paper': {
-              position: 'static'
+            position: 'fixed',
+            top: '64px',
+            left: 0,
+            height: 'calc(100vh - 64px)',
+            backgroundColor: 'background.paper',
+            display: mainDrawerOpen ? 'block' : 'none',
+            zIndex: 1100,
+            boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(0,0,0,0.2)',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'rgba(0,0,0,0.05)',
             }
           }}
         >
           <Box role="presentation">
             <List>
               <ListItem 
-                onClick={() => setComponentsDrawerOpen(!componentsDrawerOpen)}
+                onClick={() => {
+                  console.log('Clic en Componentes');
+                  // Asegurar que el menú principal esté abierto
+                  if (!mainDrawerOpen) {
+                    setMainDrawerOpen(true);
+                  }
+                  // Alternar el estado del menú de componentes
+                  setComponentsDrawerOpen(!componentsDrawerOpen);
+                }}
                 sx={{
                   color: componentsDrawerOpen ? '#000000' : 'inherit',
                   fontWeight: componentsDrawerOpen ? 700 : 400,
+                  cursor: 'pointer',
                   '&:hover': {
                     backgroundColor: 'transparent',
                     color: '#dc004e'
@@ -358,11 +363,10 @@ const Navbar = () => {
               </ListItem>
             </List>
           </Box>
-        </Drawer>
+        </Box>
 
         {/* Menú de componentes */}
         <ComponentsMenu open={componentsDrawerOpen} mainDrawerOpen={mainDrawerOpen} />
-      </Box>
     </Box>
   );
 };
