@@ -14,9 +14,22 @@ const componentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  // price es el precio original/normal del componente
   price: {
     type: Number,
     required: true,
+    min: 0
+  },
+  // discountPrice es el precio con descuento (opcional)
+  discountPrice: {
+    type: Number,
+    min: 0,
+    default: null
+  },
+  // originalPrice mantenido para compatibilidad con código existente
+  // pero ahora es redundante con price
+  originalPrice: {
+    type: Number,
     min: 0
   },
   stock: {

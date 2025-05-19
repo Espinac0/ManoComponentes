@@ -23,6 +23,8 @@ const ComponentForm = () => {
     name: '',
     type: '',
     brand: '',
+    originalPrice: '',
+    discountPrice: '',
     price: '',
     stock: '',
     description: '',
@@ -42,7 +44,22 @@ const ComponentForm = () => {
       const response = await axios.get(`http://localhost:5000/api/components/${id}`, {
         headers: { 'x-auth-token': token }
       });
-      setFormData(response.data);
+      
+      // Procesar los datos del componente para manejar los precios correctamente
+      const componentData = { ...response.data };
+      
+      // Asegurarse de que price sea un número
+      if (typeof componentData.price === 'string') {
+        componentData.price = Number(componentData.price);
+      }
+      
+      // Si hay discountPrice, asegurarse de que sea un número
+      if (componentData.discountPrice) {
+        componentData.discountPrice = Number(componentData.discountPrice);
+      }
+      
+      console.log('Componente cargado:', componentData);
+      setFormData(componentData);
     } catch (err) {
       setError('Error al cargar el componente');
       console.error('Error:', err);
@@ -181,22 +198,41 @@ const ComponentForm = () => {
     setLoading(true);
     setError(null);
 
+    // Preparar los datos para enviar
+    const dataToSend = { ...formData };
+    
+    // Asegurarse de que los precios se manejen correctamente
+    if (dataToSend.price) {
+      // Convertir a número si es string
+      dataToSend.price = Number(dataToSend.price);
+    }
+    
+    // Manejar el precio con descuento
+    if (dataToSend.discountPrice === '' || dataToSend.discountPrice === undefined) {
+      // Si no hay precio con descuento, eliminar la propiedad
+      delete dataToSend.discountPrice;
+    } else {
+      // Asegurarse de que discountPrice sea un número
+      dataToSend.discountPrice = Number(dataToSend.discountPrice);
+      console.log('Precio con descuento establecido a:', dataToSend.discountPrice);
+    }
+
     // Debug: mostrar datos que se van a enviar
-    console.log('Datos a enviar:', formData);
-    console.log('Especificaciones:', formData.specs);
+    console.log('Datos a enviar:', dataToSend);
+    console.log('Especificaciones:', dataToSend.specs);
 
     try {
       const token = localStorage.getItem('token');
       if (id) {
         await axios.put(
           `http://localhost:5000/api/components/${id}`,
-          formData,
+          dataToSend,
           { headers: { 'x-auth-token': token } }
         );
       } else {
         await axios.post(
           'http://localhost:5000/api/components',
-          formData,
+          dataToSend,
           { headers: { 'x-auth-token': token } }
         );
       }
@@ -258,12 +294,42 @@ const ComponentForm = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 name="price"
-                label="Precio"
+                label="Precio Original"
                 type="number"
                 value={formData.price}
                 onChange={handleChange}
                 fullWidth
                 required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                name="discountPrice"
+                label="Precio con Descuento"
+                type="number"
+                value={formData.discountPrice || ''}
+                onChange={(e) => {
+                  console.log('Cambiando precio con descuento:', e.target.value);
+                  // Si el campo está vacío, establecer discountPrice como null o vacío
+                  if (e.target.value === '') {
+                    setFormData(prev => {
+                      const newData = { ...prev };
+                      newData.discountPrice = '';
+                      console.log('Estableciendo discountPrice a cadena vacía');
+                      return newData;
+                    });
+                  } else {
+                    const numValue = Number(e.target.value);
+                    setFormData(prev => {
+                      const newData = { ...prev };
+                      newData.discountPrice = numValue;
+                      console.log('Estableciendo discountPrice a:', numValue);
+                      return newData;
+                    });
+                  }
+                }}
+                helperText="Dejar en blanco si no hay descuento"
+                fullWidth
               />
             </Grid>
             <Grid item xs={12} sm={6}>

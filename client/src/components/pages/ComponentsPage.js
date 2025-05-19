@@ -271,9 +271,27 @@ const ComponentsPage = () => {
                       <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'medium', height: '3em', overflow: 'hidden' }}>
                         {component.name}
                       </Typography>
-                      <Typography variant="h6" color="error" sx={{ fontWeight: 'bold', mt: 1 }}>
-                        {component.price.toFixed(2)}€
-                      </Typography>
+                      {component.discountPrice ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                          <Typography variant="h6" color="error" sx={{ fontWeight: 'bold' }}>
+                            {component.discountPrice.toFixed(2)}€
+                          </Typography>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              textDecoration: 'line-through', 
+                              color: 'text.secondary',
+                              ml: 1
+                            }}
+                          >
+                            {component.price.toFixed(2)}€
+                          </Typography>
+                        </Box>
+                      ) : (
+                        <Typography variant="h6" color="text.primary" sx={{ fontWeight: 'bold', mt: 1 }}>
+                          {component.price.toFixed(2)}€
+                        </Typography>
+                      )}
                     </CardContent>
                     <CardActions>
                       <Tooltip title={isAuthenticated ? "Añadir al carrito" : "Inicia sesión para añadir al carrito"} arrow>
