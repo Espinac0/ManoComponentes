@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid, Card, CardContent, CardMedia, Box, Button, Paper, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { Container, Typography, Grid, Card, CardContent, CardMedia, Box, Button, CircularProgress, Snackbar, Alert, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableContainer, TableRow, IconButton } from '@mui/material';
 import DiscountIcon from '@mui/icons-material/LocalOffer';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InfoIcon from '@mui/icons-material/Info';
@@ -9,9 +7,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
 
-const Home = () => {
+const Ofertas = () => {
   // State for storing discounted products
   const [discountedProducts, setDiscountedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,10 +21,6 @@ const Home = () => {
   // Get functions from cart and authentication contexts
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
-
-  // State to control the carousel
-  const [startIndex, setStartIndex] = useState(0);
-  const itemsToShow = 4; // Number of items to show at once
 
   // Function to fetch discounted products from the API
   useEffect(() => {
@@ -63,28 +56,6 @@ const Home = () => {
 
     fetchDiscountedProducts();
   }, []);
-
-  // Function to advance the carousel
-  const handleNext = () => {
-    setStartIndex((prevIndex) => 
-      (prevIndex + 1) % (discountedProducts.length - itemsToShow + 1) || 0
-    );
-  };
-
-  // Function to go back in the carousel
-  const handlePrev = () => {
-    setStartIndex((prevIndex) => 
-      prevIndex === 0 ? discountedProducts.length - itemsToShow : prevIndex - 1
-    );
-  };
-
-  // Autoplay for the carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [startIndex]);
   
   // Effect to hide cart message after 3 seconds
   useEffect(() => {
@@ -121,187 +92,120 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Banner with link to offers page */}
-      <Box sx={{ mb: 4, width: '100%' }}>
-        <Link to="/ofertas" style={{ display: 'block' }}>
-          <img 
-            src="/BannerMaño.png" 
-            alt="Ofertas Especiales" 
-            style={{ 
-              width: '100%', 
-              height: 'auto',
-              objectFit: 'cover',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-              transition: 'transform 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.01)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          />
-        </Link>
-      </Box>
-
-
-
-      {/* Carousel section with offers */}
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 6 }}>
-        <Typography variant="h2" component="h2" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
-          Nuestras mejores ofertas!
+        <Typography variant="h3" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          Todas las Ofertas
         </Typography>
-
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography color="error">{error}</Typography>
-          </Box>
-        ) : discountedProducts.length === 0 ? (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography>No hay ofertas disponibles en este momento.</Typography>
-          </Box>
-        ) : (
-          <Box sx={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-            {/* Controles del carrusel */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', position: 'absolute', top: '50%', left: 0, right: 0, zIndex: 1, transform: 'translateY(-50%)' }}>
-              <IconButton 
-                onClick={handlePrev} 
-                sx={{ 
-                  backgroundColor: 'rgba(255,255,255,0.8)', 
-                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } 
-                }}
-                disabled={discountedProducts.length <= itemsToShow}
-              >
-                <ArrowBackIosNewIcon />
-              </IconButton>
-              <IconButton 
-                onClick={handleNext} 
-                sx={{ 
-                  backgroundColor: 'rgba(255,255,255,0.8)', 
-                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } 
-                }}
-                disabled={discountedProducts.length <= itemsToShow}
-              >
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </Box>
-
-            {/* Carousel items */}
-            <Grid container spacing={3} sx={{ transition: 'transform 0.5s ease', transform: `translateX(-${startIndex * (100 / itemsToShow)}%)` }}>
-              {discountedProducts.map((product) => (
-              <Grid item key={product.id} xs={12 / itemsToShow} sx={{ flexShrink: 0 }}>
-                <Card sx={{ 
-                  height: '100%', 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  position: 'relative',
-                  transition: 'transform 0.3s',
-                  '&:hover': {
-                    transform: 'scale(1.03)',
-                    boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
-                  }
-                }}>
-                  {/* Discount label */}
-                  {/* Info button */}
-                  <IconButton
-                    sx={{
-                      position: 'absolute',
-                      top: 10,
-                      left: 10,
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      color: 'primary.dark',
-                      zIndex: 1,
-                      '&:hover': {
-                        backgroundColor: 'rgba(255,255,255,1)',
-                      }
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedProduct(product);
-                      setOpenSpecsDialog(true);
-                    }}
-                  >
-                    <InfoIcon />
-                  </IconButton>
-
-                  {/* Etiqueta de descuento */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 10,
-                      right: 10,
-                      backgroundColor: 'error.main',
-                      color: 'white',
-                      borderRadius: '50%',
-                      width: 56,
-                      height: 56,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 'bold',
-                      zIndex: 1,
-                      boxShadow: 3
-                    }}
-                  >
-                    <Typography variant="body2" component="div" align="center" fontWeight="bold">
-                      -{product.discountPercentage}%
-                    </Typography>
-                  </Box>
-
-                  <CardMedia
-                    component="img"
-                    height="180"
-                    image={product.image}
-                    alt={product.name}
-                    sx={{ objectFit: 'contain', p: 2 }}
-                  />
-                  <CardContent sx={{ flexGrow: 1, pt: 1, pb: 1 }}>
-                    <Typography gutterBottom variant="h6" component="h2" sx={{ 
-                      fontWeight: 'medium', 
-                      minHeight: '2.5em',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
-                      {product.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, height: '3em', overflow: 'hidden' }}>
-                      {product.description}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body1" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
-                        {product.originalPrice.toFixed(2)}€
-                      </Typography>
-                      <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold' }}>
-                        {product.discountPrice.toFixed(2)}€
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                  <Box sx={{ p: 2, pt: 0 }}>
-                    <Tooltip title={isAuthenticated ? "Añadir al carrito" : "Inicia sesión para añadir al carrito"} arrow>
-                      <Button 
-                        variant="contained" 
-                        fullWidth 
-                        color="secondary"
-                        startIcon={<AddShoppingCartIcon />}
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        Añadir al carrito
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-          </Box>
-        )}
+        <Typography variant="h5" align="center" color="text.secondary" paragraph>
+          Aprovecha nuestros mejores descuentos en componentes de ordenador
+        </Typography>
       </Box>
+
+      {/* Show error if it exists */}
+      {error && (
+        <Box sx={{ mb: 4 }}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      )}
+
+      {/* Show spinner while loading */}
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={4}>
+          {discountedProducts.map((product) => (
+            <Grid item key={product.id} xs={12} sm={6} md={4}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                {/* Info button */}
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    top: 10,
+                    left: 10,
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    color: 'primary.dark',
+                    zIndex: 1,
+                    '&:hover': {
+                      backgroundColor: 'rgba(255,255,255,1)',
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedProduct(product);
+                    setOpenSpecsDialog(true);
+                  }}
+                >
+                  <InfoIcon />
+                </IconButton>
+
+                {/* Discount label */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    backgroundColor: 'error.main',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: 56,
+                    height: 56,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 'bold',
+                    zIndex: 1,
+                    boxShadow: 3
+                  }}
+                >
+                  <Typography variant="body2" component="div" align="center" fontWeight="bold">
+                    -{product.discountPercentage}%
+                  </Typography>
+                </Box>
+
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={product.image}
+                  alt={product.name}
+                />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {product.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {product.description}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="body1" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                      {product.originalPrice.toFixed(2)}€
+                    </Typography>
+                    <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold' }}>
+                      {product.discountPrice.toFixed(2)}€
+                    </Typography>
+                  </Box>
+                </CardContent>
+                <Box sx={{ p: 2, pt: 0 }}>
+                  <Tooltip title={isAuthenticated ? "Añadir al carrito" : "Inicia sesión para añadir al carrito"} arrow>
+                    <Button 
+                      variant="contained" 
+                      fullWidth 
+                      color="secondary"
+                      startIcon={<AddShoppingCartIcon />}
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      Añadir al carrito
+                    </Button>
+                  </Tooltip>
+                </Box>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+
       {/* Snackbar to show cart messages */}
       <Snackbar
         open={showCartMessage}
@@ -417,11 +321,11 @@ const Home = () => {
                         'Fan_size': 'Tamaño del ventilador'
                       };
                       
-                      // Buscar coincidencias exactas primero
+                      // Look for exact matches first
                       if (keyMappings[key]) {
                         displayKey = keyMappings[key];
                       } else {
-                        // Buscar coincidencias parciales
+                        // Look for partial matches
                         Object.keys(keyMappings).forEach(mappingKey => {
                           if (key.toLowerCase().includes(mappingKey.toLowerCase())) {
                             displayKey = keyMappings[mappingKey];
@@ -485,4 +389,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Ofertas;

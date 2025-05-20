@@ -5,6 +5,7 @@ import Home from './components/pages/Home';
 import ProductList from './components/pages/ProductList';
 import ComponentsPage from './components/pages/ComponentsPage';
 import CartPage from './components/pages/CartPage';
+import Ofertas from './components/pages/Ofertas';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ProtectedAdminRoute from './components/auth/ProtectedAdminRoute';
@@ -49,6 +50,7 @@ const AppContent = () => {
           <Route path="/productos/:category" element={<ProductList />} />
           <Route path="/componentes" element={<ComponentsPage />} />
           <Route path="/carrito" element={<CartPage />} />
+          <Route path="/ofertas" element={<Ofertas />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />

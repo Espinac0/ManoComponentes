@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Container, Grid, Card, CardMedia, CardContent, CircularProgress, Button, CardActions, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, Container, Grid, Card, CardMedia, CardContent, CircularProgress, Button, CardActions, IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LoginIcon from '@mui/icons-material/Login';
+import InfoIcon from '@mui/icons-material/Info';
+import CloseIcon from '@mui/icons-material/Close';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-// Definir categorías predefinidas
+// Define predefined categories
 const categories = {
   'gpu': 'Tarjetas Gráficas',
   'cpu': 'Procesadores',
@@ -26,13 +28,15 @@ const ComponentsPage = () => {
   const [error, setError] = useState(null);
   const [cartMessage, setCartMessage] = useState('');
   const [showCartMessage, setShowCartMessage] = useState(false);
-  // Estados para el carrusel por categoría
+  const [selectedComponent, setSelectedComponent] = useState(null);
+  const [openSpecsDialog, setOpenSpecsDialog] = useState(false);
+  // States for carousel by category
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
-  // Número de componentes a mostrar por página en el carrusel
+  // Number of components to show per page in the carousel
   const maxItemsPerPage = 4;
 
   useEffect(() => {
@@ -52,7 +56,7 @@ const ComponentsPage = () => {
     fetchComponents();
   }, []);
   
-  // Efecto para ocultar el mensaje del carrito después de 3 segundos
+  // Effect to hide cart message after 3 seconds
   useEffect(() => {
     if (showCartMessage) {
       const timer = setTimeout(() => {
@@ -62,25 +66,25 @@ const ComponentsPage = () => {
     }
   }, [showCartMessage]);
 
-  // Función para añadir un producto al carrito usando el contexto
+  // Function to add a product to cart using context
   const handleAddToCart = async (component) => {
-    // Verificar si el usuario está autenticado
+    // Check if user is authenticated
     if (!isAuthenticated) {
-      // Mostrar mensaje indicando que debe iniciar sesión
+      // Show message indicating login is required
       setCartMessage('Inicia sesión para añadir productos al carrito');
       setShowCartMessage(true);
       return;
     }
     
-    // Usar el contexto para añadir al carrito
+    // Use context to add to cart
     const success = await addToCart(component);
     
     if (success) {
-      // Mostrar mensaje de confirmación
+      // Show confirmation message
       setCartMessage(`${component.name} añadido al carrito`);
       setShowCartMessage(true);
     } else {
-      // Mostrar mensaje de error
+      // Show error message
       setCartMessage('Error al añadir al carrito');
       setShowCartMessage(true);
     }
@@ -88,9 +92,9 @@ const ComponentsPage = () => {
 
   // Usar las categorías predefinidas definidas fuera del componente
 
-  // Función para determinar la categoría de un componente
+  // Function to determine the category of a component
   const determineCategory = (component) => {
-    // Verificar el nombre y la categoría para determinar el tipo
+    // Check name and category to determine the type
     const name = (component.name || '').toLowerCase();
     const category = (component.category || '').toLowerCase();
     
@@ -188,15 +192,15 @@ const ComponentsPage = () => {
       </Typography>
 
       {Object.entries(groupedComponents).map(([category, items]) => {
-        // Solo mostrar categorías que tengan componentes
+        // Only show categories that have components
         if (items.length === 0) return null;
         
-        // Obtener el índice actual para esta categoría (o 0 si no existe)
+        // Get current index for this category
         const startIndex = carouselIndexes[category] || 0;
         const hasMoreItems = items.length > startIndex + maxItemsPerPage;
         const hasPreviousItems = startIndex > 0;
         
-        // Función para avanzar al siguiente grupo de componentes
+        // Function to advance to next group of components
         const handleNext = () => {
           if (hasMoreItems) {
             setCarouselIndexes({
@@ -206,7 +210,7 @@ const ComponentsPage = () => {
           }
         };
         
-        // Función para retroceder al grupo anterior de componentes
+        // Function to go back to previous group of components
         const handlePrevious = () => {
           if (hasPreviousItems) {
             setCarouselIndexes({
@@ -216,7 +220,7 @@ const ComponentsPage = () => {
           }
         };
         
-        // Obtener solo los componentes que se mostrarán en la página actual
+        // Get only the components that will be shown on the current page
         const visibleItems = items.slice(startIndex, startIndex + maxItemsPerPage);
         
         return (
@@ -257,9 +261,32 @@ const ComponentsPage = () => {
                       '&:hover': {
                         transform: 'scale(1.03)',
                         boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
-                      }
+                      },
+                      position: 'relative'
                     }}
                   >
+                    {/* Info button */}
+                    <IconButton
+                      sx={{
+                        position: 'absolute',
+                        top: 10,
+                        left: 10,
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        color: 'primary.dark',
+                        zIndex: 1,
+                        '&:hover': {
+                          backgroundColor: 'rgba(255,255,255,1)',
+                        }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedComponent(component);
+                        setOpenSpecsDialog(true);
+                      }}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                    
                     <CardMedia
                       component="img"
                       height="200"
@@ -313,13 +340,186 @@ const ComponentsPage = () => {
           </Box>
         );
       })}
+      
+      {/* Dialog to show component specifications */}
+      <Dialog
+        open={openSpecsDialog}
+        onClose={() => setOpenSpecsDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '8px',
+            overflow: 'hidden',
+            position: 'relative',
+            pt: 5 // Add more space at the top
+          }
+        }}
+      >
+        {selectedComponent && (
+          <>
+            {/* Close button positioned absolutely at top right */}
+            <IconButton 
+              onClick={() => setOpenSpecsDialog(false)}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                backgroundColor: 'rgba(0,0,0,0.05)',
+                '&:hover': {
+                  backgroundColor: 'rgba(0,0,0,0.1)'
+                },
+                zIndex: 1
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            
+            <DialogTitle sx={{ textAlign: 'center', pt: 0 }}>
+              <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                {selectedComponent.name}
+              </Typography>
+            </DialogTitle>
+            <DialogContent dividers>
+              <TableContainer>
+                <Table>
+                  <TableBody>
+                    {selectedComponent.category && (
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Categoría
+                        </TableCell>
+                        <TableCell>{getCategoryName(determineCategory(selectedComponent))}</TableCell>
+                      </TableRow>
+                    )}
+                    {selectedComponent.brand && (
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Marca
+                        </TableCell>
+                        <TableCell>{selectedComponent.brand}</TableCell>
+                      </TableRow>
+                    )}
+                    {selectedComponent.model && (
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                          Modelo
+                        </TableCell>
+                        <TableCell>{selectedComponent.model}</TableCell>
+                      </TableRow>
+                    )}
+                    {selectedComponent.specs && Object.entries(selectedComponent.specs).map(([key, value]) => {
+                      // Translate keys to more user-friendly terms
+                      let displayKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+                      
+                      // Mapping of technical terms to more user-friendly terms
+                      const keyMappings = {
+                        'Form factor': 'Forma',
+                        'Form_factor': 'Forma',
+                        'Chipset': 'Chipset',
+                        'Ram_slots': 'Huecos de RAM',
+                        'Max_ram': 'RAM máxima',
+                        'Max ram': 'RAM máxima',
+                        'Socket': 'Socket',
+                        'Cores': 'Núcleos',
+                        'Threads': 'Hilos',
+                        'Clock speed': 'Velocidad',
+                        'Clock_speed': 'Velocidad',
+                        'Memory type': 'Tipo de memoria',
+                        'Memory_type': 'Tipo de memoria',
+                        'Capacity': 'Capacidad',
+                        'Interface': 'Interfaz',
+                        'Rpm': 'RPM',
+                        'Cache': 'Caché',
+                        'Tdp': 'TDP',
+                        'Wattage': 'Potencia',
+                        'Efficiency': 'Eficiencia',
+                        'Size': 'Tamaño',
+                        'Type': 'Tipo',
+                        'Fan size': 'Tamaño del ventilador',
+                        'Fan_size': 'Tamaño del ventilador'
+                      };
+                      
+                      // Look for exact matches first
+                      if (keyMappings[key]) {
+                        displayKey = keyMappings[key];
+                      } else {
+                        // Look for partial matches
+                        Object.keys(keyMappings).forEach(mappingKey => {
+                          if (key.toLowerCase().includes(mappingKey.toLowerCase())) {
+                            displayKey = keyMappings[mappingKey];
+                          }
+                        });
+                      }
+                      
+                      return (
+                        <TableRow key={key}>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            {displayKey}
+                          </TableCell>
+                          <TableCell>{value}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    <TableRow>
+                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                        Precio
+                      </TableCell>
+                      <TableCell>
+                        {selectedComponent.discountPrice ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body1" color="error.main" sx={{ fontWeight: 'bold' }}>
+                              {selectedComponent.discountPrice.toFixed(2)}€
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                              {selectedComponent.price.toFixed(2)}€
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Typography variant="body1">
+                            {selectedComponent.price.toFixed(2)}€
+                          </Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              {selectedComponent.description && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                    Descripción:
+                  </Typography>
+                  <Typography variant="body2">
+                    {selectedComponent.description}
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                startIcon={<AddShoppingCartIcon />}
+                onClick={() => {
+                  handleAddToCart(selectedComponent);
+                  setOpenSpecsDialog(false);
+                }}
+                sx={{ minWidth: '200px' }}
+              >
+                Añadir al carrito
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Container>
   );
 };
 
-// Función para obtener el nombre legible de la categoría
+// Function to get the readable name of the category
 const getCategoryName = (category) => {
-  // Usar las categorías predefinidas que ya tenemos en el componente
+  // Use the predefined categories we already have in the component
   return categories[category] || 'Otros Componentes';
 };
 

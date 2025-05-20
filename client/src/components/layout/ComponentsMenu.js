@@ -45,7 +45,8 @@ const ComponentsMenu = ({ open, mainDrawerOpen }) => {
         },
         '&::-webkit-scrollbar-track': {
           backgroundColor: 'rgba(0,0,0,0.05)',
-        }
+        },
+        paddingTop: '20px' // Add more padding at the top of the drawer
       }}
     >
       <Box
@@ -74,7 +75,7 @@ const ComponentsMenu = ({ open, mainDrawerOpen }) => {
             Ver todo
           </Typography>
         </Box>
-        <List>
+        <List sx={{ mt: 2 }}>
           <ListItem sx={{
             '&:hover': {
               backgroundColor: 'transparent',
