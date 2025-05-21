@@ -4,14 +4,18 @@ import Navbar from './components/layout/Navbar';
 import Home from './components/pages/Home';
 import ProductList from './components/pages/ProductList';
 import ComponentsPage from './components/pages/ComponentsPage';
+import ComputersPage from './components/pages/ComputersPage';
 import CartPage from './components/pages/CartPage';
 import Ofertas from './components/pages/Ofertas';
+import SearchPage from './components/pages/SearchPage';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ProtectedAdminRoute from './components/auth/ProtectedAdminRoute';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ComponentList from './components/admin/ComponentList';
 import ComponentForm from './components/admin/ComponentForm';
+import ComputerList from './components/admin/ComputerList';
+import ComputerForm from './components/admin/ComputerForm';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -49,14 +53,19 @@ const AppContent = () => {
           <Route path="/productos" element={<ProductList />} />
           <Route path="/productos/:category" element={<ProductList />} />
           <Route path="/componentes" element={<ComponentsPage />} />
+          <Route path="/ordenadores" element={<ComputersPage />} />
           <Route path="/carrito" element={<CartPage />} />
           <Route path="/ofertas" element={<Ofertas />} />
+          <Route path="/busqueda" element={<SearchPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
           <Route path="/admin/components" element={<ProtectedAdminRoute><ComponentList /></ProtectedAdminRoute>} />
           <Route path="/admin/components/new" element={<ProtectedAdminRoute><ComponentForm /></ProtectedAdminRoute>} />
           <Route path="/admin/components/edit/:id" element={<ProtectedAdminRoute><ComponentForm /></ProtectedAdminRoute>} />
+          <Route path="/admin/computers" element={<ProtectedAdminRoute><ComputerList /></ProtectedAdminRoute>} />
+          <Route path="/admin/computers/new" element={<ProtectedAdminRoute><ComputerForm /></ProtectedAdminRoute>} />
+          <Route path="/admin/computers/edit/:id" element={<ProtectedAdminRoute><ComputerForm /></ProtectedAdminRoute>} />
         </Routes>
       </Box>
     </Box>

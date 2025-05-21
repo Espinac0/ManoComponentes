@@ -4,6 +4,7 @@ import DiscountIcon from '@mui/icons-material/LocalOffer';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
+import LoginIcon from '@mui/icons-material/Login';
 import axios from 'axios';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -385,6 +386,30 @@ const Ofertas = () => {
           </>
         )}
       </Dialog>
+
+      {/* Cart message snackbar */}
+      {showCartMessage && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: isAuthenticated ? 'success.main' : 'warning.main',
+            color: 'white',
+            py: 1,
+            px: 3,
+            borderRadius: 2,
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1
+          }}
+        >
+          {!isAuthenticated && <LoginIcon />}
+          <Typography variant="body2">{cartMessage}</Typography>
+        </Box>
+      )}
     </Container>
   );
 };

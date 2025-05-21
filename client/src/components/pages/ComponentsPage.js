@@ -381,120 +381,124 @@ const ComponentsPage = () => {
               </Typography>
             </DialogTitle>
             <DialogContent dividers>
-              <TableContainer>
-                <Table>
-                  <TableBody>
-                    {selectedComponent.category && (
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          Categoría
-                        </TableCell>
-                        <TableCell>{getCategoryName(determineCategory(selectedComponent))}</TableCell>
-                      </TableRow>
-                    )}
-                    {selectedComponent.brand && (
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          Marca
-                        </TableCell>
-                        <TableCell>{selectedComponent.brand}</TableCell>
-                      </TableRow>
-                    )}
-                    {selectedComponent.model && (
-                      <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                          Modelo
-                        </TableCell>
-                        <TableCell>{selectedComponent.model}</TableCell>
-                      </TableRow>
-                    )}
-                    {selectedComponent.specs && Object.entries(selectedComponent.specs).map(([key, value]) => {
-                      // Translate keys to more user-friendly terms
-                      let displayKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
-                      
-                      // Mapping of technical terms to more user-friendly terms
-                      const keyMappings = {
-                        'Form factor': 'Forma',
-                        'Form_factor': 'Forma',
-                        'Chipset': 'Chipset',
-                        'Ram_slots': 'Huecos de RAM',
-                        'Max_ram': 'RAM máxima',
-                        'Max ram': 'RAM máxima',
-                        'Socket': 'Socket',
-                        'Cores': 'Núcleos',
-                        'Threads': 'Hilos',
-                        'Clock speed': 'Velocidad',
-                        'Clock_speed': 'Velocidad',
-                        'Memory type': 'Tipo de memoria',
-                        'Memory_type': 'Tipo de memoria',
-                        'Capacity': 'Capacidad',
-                        'Interface': 'Interfaz',
-                        'Rpm': 'RPM',
-                        'Cache': 'Caché',
-                        'Tdp': 'TDP',
-                        'Wattage': 'Potencia',
-                        'Efficiency': 'Eficiencia',
-                        'Size': 'Tamaño',
-                        'Type': 'Tipo',
-                        'Fan size': 'Tamaño del ventilador',
-                        'Fan_size': 'Tamaño del ventilador'
-                      };
-                      
-                      // Look for exact matches first
-                      if (keyMappings[key]) {
-                        displayKey = keyMappings[key];
-                      } else {
-                        // Look for partial matches
-                        Object.keys(keyMappings).forEach(mappingKey => {
-                          if (key.toLowerCase().includes(mappingKey.toLowerCase())) {
-                            displayKey = keyMappings[mappingKey];
-                          }
-                        });
-                      }
-                      
-                      return (
-                        <TableRow key={key}>
-                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                            {displayKey}
-                          </TableCell>
-                          <TableCell>{value}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    <TableRow>
-                      <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                        Precio
-                      </TableCell>
-                      <TableCell>
-                        {selectedComponent.discountPrice ? (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="body1" color="error.main" sx={{ fontWeight: 'bold' }}>
-                              {selectedComponent.discountPrice.toFixed(2)}€
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
-                              {selectedComponent.price.toFixed(2)}€
-                            </Typography>
-                          </Box>
-                        ) : (
-                          <Typography variant="body1">
-                            {selectedComponent.price.toFixed(2)}€
-                          </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TableContainer>
+                    <Table>
+                      <TableBody>
+                        {selectedComponent.category && (
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              Categoría
+                            </TableCell>
+                            <TableCell>{getCategoryName(determineCategory(selectedComponent))}</TableCell>
+                          </TableRow>
                         )}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {selectedComponent.description && (
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Descripción:
-                  </Typography>
-                  <Typography variant="body2">
-                    {selectedComponent.description}
-                  </Typography>
-                </Box>
-              )}
+                        {selectedComponent.brand && (
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              Marca
+                            </TableCell>
+                            <TableCell>{selectedComponent.brand}</TableCell>
+                          </TableRow>
+                        )}
+                        {selectedComponent.model && (
+                          <TableRow>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                              Modelo
+                            </TableCell>
+                            <TableCell>{selectedComponent.model}</TableCell>
+                          </TableRow>
+                        )}
+                        {selectedComponent.specs && Object.entries(selectedComponent.specs).map(([key, value]) => {
+                          // Translate keys to more user-friendly terms
+                          let displayKey = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+                          
+                          // Mapping of technical terms to more user-friendly terms
+                          const keyMappings = {
+                            'Form factor': 'Forma',
+                            'Form_factor': 'Forma',
+                            'Chipset': 'Chipset',
+                            'Ram_slots': 'Huecos de RAM',
+                            'Max_ram': 'RAM máxima',
+                            'Max ram': 'RAM máxima',
+                            'Socket': 'Socket',
+                            'Cores': 'Núcleos',
+                            'Threads': 'Hilos',
+                            'Clock speed': 'Velocidad',
+                            'Clock_speed': 'Velocidad',
+                            'Memory type': 'Tipo de memoria',
+                            'Memory_type': 'Tipo de memoria',
+                            'Capacity': 'Capacidad',
+                            'Interface': 'Interfaz',
+                            'Rpm': 'RPM',
+                            'Cache': 'Caché',
+                            'Tdp': 'TDP',
+                            'Wattage': 'Potencia',
+                            'Efficiency': 'Eficiencia',
+                            'Size': 'Tamaño',
+                            'Type': 'Tipo',
+                            'Fan size': 'Tamaño del ventilador',
+                            'Fan_size': 'Tamaño del ventilador'
+                          };
+                          
+                          // Look for exact matches first
+                          if (keyMappings[key]) {
+                            displayKey = keyMappings[key];
+                          } else {
+                            // Look for partial matches
+                            Object.keys(keyMappings).forEach(mappingKey => {
+                              if (key.toLowerCase().includes(mappingKey.toLowerCase())) {
+                                displayKey = keyMappings[mappingKey];
+                              }
+                            });
+                          }
+                          
+                          return (
+                            <TableRow key={key}>
+                              <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                                {displayKey}
+                              </TableCell>
+                              <TableCell>{value}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            Precio
+                          </TableCell>
+                          <TableCell>
+                            {selectedComponent.discountPrice ? (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography variant="body1" color="error.main" sx={{ fontWeight: 'bold' }}>
+                                  {selectedComponent.discountPrice.toFixed(2)}€
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                                  {selectedComponent.price.toFixed(2)}€
+                                </Typography>
+                              </Box>
+                            ) : (
+                              <Typography variant="body1">
+                                {selectedComponent.price.toFixed(2)}€
+                              </Typography>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  {selectedComponent.description && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="body1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                        Descripción:
+                      </Typography>
+                      <Typography variant="body2">
+                        {selectedComponent.description}
+                      </Typography>
+                    </Box>
+                  )}
+                </Grid>
+              </Grid>
             </DialogContent>
             <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
               <Button 

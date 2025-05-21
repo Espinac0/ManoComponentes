@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Container, 
   Typography, 
@@ -22,9 +22,68 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
 const CartPage = () => {
-  const { cartItems, loading, increaseQuantity, decreaseQuantity, removeItem, clearCart, getTotal } = useCart();
+  const { cartItems, loading, increaseQuantity, decreaseQuantity, removeItem, clearCart, getTotal, updateQuantity } = useCart();
   const { isAuthenticated } = useAuth();
   const [processingCheckout, setProcessingCheckout] = useState(false);
+  const [productStocks, setProductStocks] = useState({});
+  
+  // Obtener el stock de los productos en el carrito
+  useEffect(() => {
+    const fetchProductStocks = async () => {
+      try {
+        // Crear un objeto para almacenar el stock de cada producto
+        const stocks = {};
+        
+        // Obtener el stock de cada producto en el carrito
+        for (const item of cartItems) {
+          const productId = item._id || item.component;
+          
+          // Verificar si ya tenemos el stock de este producto
+          if (!stocks[productId]) {
+            try {
+              // Obtener el stock del producto desde la API
+              const response = await fetch(`http://localhost:5000/api/components/${productId}`);
+              const data = await response.json();
+              
+              // Guardar el stock del producto
+              stocks[productId] = data.stock || 10; // Valor predeterminado si no hay stock
+            } catch (error) {
+              console.error(`Error al obtener el stock del producto ${productId}:`, error);
+              stocks[productId] = 10; // Valor predeterminado en caso de error
+            }
+          }
+        }
+        
+        setProductStocks(stocks);
+      } catch (error) {
+        console.error('Error al obtener el stock de los productos:', error);
+      }
+    };
+    
+    if (cartItems.length > 0) {
+      fetchProductStocks();
+    }
+  }, [cartItems]);
+  
+  // Función para manejar el cambio de cantidad directamente desde el input
+  const handleQuantityChange = (itemId, newValue) => {
+    // Convertir el valor a número entero
+    const newQuantity = parseInt(newValue, 10);
+    
+    // Validar que sea un número válido
+    if (isNaN(newQuantity) || newQuantity < 1) {
+      return;
+    }
+    
+    // Obtener el stock disponible para este producto
+    const availableStock = productStocks[itemId] || 10;
+    
+    // Limitar la cantidad al stock disponible
+    const limitedQuantity = Math.min(newQuantity, availableStock);
+    
+    // Actualizar la cantidad en el carrito
+    updateQuantity(itemId, limitedQuantity);
+  };
 
   // Función para procesar el pago (simulada)
   const handleCheckout = async () => {
@@ -91,13 +150,27 @@ const CartPage = () => {
                     </IconButton>
                     <TextField
                       size="small"
+                      type="text"
                       value={item.quantity}
-                      InputProps={{
-                        readOnly: true,
-                        sx: { width: '60px', textAlign: 'center', input: { textAlign: 'center' } }
+                      onChange={(e) => handleQuantityChange(item._id, e.target.value)}
+                      inputProps={{
+                        style: { textAlign: 'center', fontSize: '16px' }
                       }}
+                      sx={{ 
+                        width: '80px',
+                        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                          display: 'none',
+                        },
+                        '& input[type=number]': {
+                          MozAppearance: 'textfield',
+                        },
+                      }}
+                      helperText={`Stock: ${productStocks[item._id] || '?'}`}
                     />
-                    <IconButton onClick={() => increaseQuantity(item._id)}>
+                    <IconButton 
+                      onClick={() => increaseQuantity(item._id)}
+                      disabled={item.quantity >= (productStocks[item._id] || 10)}
+                    >
                       <AddIcon />
                     </IconButton>
                     <Typography variant="subtitle1" color="error" sx={{ ml: 2, fontWeight: 'bold' }}>

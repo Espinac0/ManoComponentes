@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const componentRoutes = require('./routes/components');
+const computerRoutes = require('./routes/computers');
 const initRoutes = require('./routes/init');
 const cartRoutes = require('./routes/cart');
 
@@ -36,6 +37,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/manocompo
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/components', componentRoutes);
+app.use('/api/computers', computerRoutes);
 app.use('/api/init', initRoutes);
 app.use('/api/cart', cartRoutes);
 

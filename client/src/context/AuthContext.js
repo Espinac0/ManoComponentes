@@ -136,6 +136,12 @@ export const AuthProvider = ({ children }) => {
     // Esto asegura que el contador del carrito se actualice correctamente
     // cuando el usuario cierra sesión y se muestra el carrito de invitado
     window.dispatchEvent(new CustomEvent('cartUpdated'));
+    
+    // Recargar la página para asegurar que la sesión se cierre correctamente
+    // Usar setTimeout para asegurar que los cambios de estado se apliquen antes de recargar
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
   
   return (

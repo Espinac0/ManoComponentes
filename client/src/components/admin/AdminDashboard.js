@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Typography, Button, Grid, Paper, Divider } from '@mui/material';
 import { Link } from 'react-router-dom';
 import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
+import LaptopIcon from '@mui/icons-material/Laptop';
+import DevicesIcon from '@mui/icons-material/Devices';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -63,6 +65,62 @@ const AdminDashboard = () => {
               variant="contained"
               component={Link}
               to="/admin/components"
+              fullWidth
+            >
+              Ver Listado
+            </Button>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 4 }} />
+
+      <Typography variant="h5" sx={{ mb: 3 }}>
+        Ordenadores
+      </Typography>
+      
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={6} md={4}>
+          <Paper
+            sx={{
+              p: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              backgroundColor: '#fff8e1'
+            }}
+          >
+            <LaptopIcon sx={{ fontSize: 40 }} />
+            <Typography variant="h6">Crear Ordenador</Typography>
+            <Button
+              variant="contained"
+              component={Link}
+              to="/admin/computers/new"
+              fullWidth
+            >
+              Crear Nuevo
+            </Button>
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <Paper
+            sx={{
+              p: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              backgroundColor: '#fff8e1'
+            }}
+          >
+            <DevicesIcon sx={{ fontSize: 40 }} />
+            <Typography variant="h6">Gestionar Ordenadores</Typography>
+            <Button
+              variant="contained"
+              component={Link}
+              to="/admin/computers"
               fullWidth
             >
               Ver Listado

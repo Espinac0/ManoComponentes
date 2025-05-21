@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -14,20 +13,22 @@ import StorageIcon from '@mui/icons-material/Storage';
 import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
 import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
+import LaptopIcon from '@mui/icons-material/Laptop';
+import DevicesIcon from '@mui/icons-material/Devices';
 import { useTheme } from '@mui/material/styles';
 
-const ComponentsMenu = ({ open, mainDrawerOpen }) => {
+const MenuLateral = ({ open, mainDrawerOpen }) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  console.log('ComponentsMenu render:', { open, mainDrawerOpen });
+  console.log('MenuLateral render:', { open, mainDrawerOpen });
   return (
     <Box
-      id="components-menu"
+      id="menu-lateral"
       sx={{
         width: 250,
         position: 'fixed',
         top: '64px',
-        left: '250px',
+        left: '0px',
         height: 'calc(100vh - 64px)',
         backgroundColor: 'background.paper',
         borderLeft: 1,
@@ -35,7 +36,7 @@ const ComponentsMenu = ({ open, mainDrawerOpen }) => {
         overflowY: 'auto',
         zIndex: 1200,
         boxShadow: theme.shadows[5],
-        display: open && mainDrawerOpen ? 'block' : 'none',
+        display: open ? 'block' : 'none',
         '&::-webkit-scrollbar': {
           width: '8px',
         },
@@ -60,7 +61,7 @@ const ComponentsMenu = ({ open, mainDrawerOpen }) => {
       >
         <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
           <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-            Componentes
+            Menú
           </Typography>
           <Typography 
             onClick={() => navigate('/componentes')}
@@ -216,9 +217,68 @@ const ComponentsMenu = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
         </List>
+
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', mt: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+            Ordenadores
+          </Typography>
+          <Typography 
+            onClick={() => navigate('/ordenadores')}
+            sx={{ 
+              textDecoration: 'underline', 
+              cursor: 'pointer',
+              '&:hover': {
+                color: '#dc004e'
+              }
+            }}
+          >
+            Ver todo
+          </Typography>
+        </Box>
+        <List sx={{ mt: 2 }}>
+          <ListItem sx={{
+            '&:hover': {
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              '& .MuiListItemText-primary': {
+                color: '#dc004e'
+              }
+            }
+          }}>
+            <ListItemIcon>
+              <LaptopIcon />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Portátiles" 
+              primaryTypographyProps={{ 
+                fontSize: '1.1rem'
+              }}
+            />
+          </ListItem>
+
+          <ListItem sx={{
+            '&:hover': {
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              '& .MuiListItemText-primary': {
+                color: '#dc004e'
+              }
+            }
+          }}>
+            <ListItemIcon>
+              <DevicesIcon />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Sobremesa" 
+              primaryTypographyProps={{ 
+                fontSize: '1.1rem'
+              }}
+            />
+          </ListItem>
+        </List>
       </Box>
     </Box>
   );
 };
 
-export default ComponentsMenu;
+export default MenuLateral;

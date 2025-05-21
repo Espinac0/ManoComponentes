@@ -7,46 +7,40 @@ import Typography from '@mui/material/Typography';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
 //https://mui.com/material-ui/material-icons/
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronRight from '@mui/icons-material/ChevronRight';
-import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from '@mui/material/Badge';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
 
 // Componentes personalizados
-import ComponentsMenu from './ComponentsMenu';
+import MenuLateral from './MenuLateral';
 
 const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
-  const [mainDrawerOpen, setMainDrawerOpen] = useState(false);
-  const [componentsDrawerOpen, setComponentsDrawerOpen] = useState(false);
+  const [componentsDrawerOpen, setComponentsDrawerOpen] = useState(false); // Controla la apertura del menú lateral
   const [cartCount, setCartCount] = useState(0);
   const [cartAnchorEl, setCartAnchorEl] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Función para cerrar los menús al hacer clic fuera
   const handleClickOutside = useCallback((event) => {
-    // Verificar si el clic fue fuera de los menús
-    const isClickOutsideMainMenu = !event.target.closest('#main-menu');
-    const isClickOutsideComponentsMenu = !event.target.closest('#components-menu');
+    // Verificar si el clic fue fuera del menú
+    const isClickOutsideMenu = !event.target.closest('#menu-lateral');
     
-    if (mainDrawerOpen && isClickOutsideMainMenu && isClickOutsideComponentsMenu) {
-      console.log('Clic fuera de los menús, cerrando...');
-      setMainDrawerOpen(false);
+    if (componentsDrawerOpen && isClickOutsideMenu) {
+      console.log('Clic fuera del menú, cerrando...');
       setComponentsDrawerOpen(false);
     }
-  }, [mainDrawerOpen]);
+  }, [componentsDrawerOpen]);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
@@ -157,6 +151,18 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
+  // Función para manejar la búsqueda
+  const handleSearch = (e) => {
+    // Prevenir el comportamiento por defecto del formulario
+    e.preventDefault();
+    
+    // Redirigir a la página de búsqueda con la consulta como parámetro
+    if (searchQuery.trim()) {
+      navigate(`/busqueda?query=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(''); // Limpiar el campo después de la búsqueda
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
@@ -164,7 +170,12 @@ const Navbar = () => {
     setUserEmail('');
     setIsAdmin(false);
     handleClose();
-    navigate('/');
+    // Navegar a la página principal y luego recargar para asegurar que la sesión se cierre correctamente
+    navigate('/', { replace: true });
+    // Recargar la página después de un breve retraso para asegurar que la navegación se complete
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   return (
@@ -176,7 +187,7 @@ const Navbar = () => {
           </Box>
 
           <Box
-            onClick={() => setMainDrawerOpen(!mainDrawerOpen)}
+            onClick={() => setComponentsDrawerOpen(!componentsDrawerOpen)}
             sx={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -193,15 +204,62 @@ const Navbar = () => {
             <Typography 
               className="menu-text"
               sx={{ 
-                fontWeight: mainDrawerOpen ? 700 : 400,
-                color: mainDrawerOpen ? '#000000' : 'inherit'
+                fontWeight: componentsDrawerOpen ? 700 : 400,
+                color: componentsDrawerOpen ? '#000000' : 'inherit'
               }}
             >
               Todos los productos
             </Typography>
           </Box>
 
-          <Box sx={{ flexGrow: 1 }} />
+          {/* Barra de búsqueda */}
+          <Box
+            component="form"
+            onSubmit={handleSearch}
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              justifyContent: 'center',
+              mx: 2
+            }}
+          >
+            <TextField
+              size="small"
+              placeholder="Buscar productos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{
+                width: { xs: '100%', sm: '60%', md: '50%' },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '20px',
+                  backgroundColor: '#f5f5f5',
+                  '&:hover': {
+                    backgroundColor: '#eeeeee',
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => setSearchQuery('')}
+                      edge="end"
+                    >
+                      <Box component="span" sx={{ fontSize: '1.2rem', fontWeight: 'bold' }}>×</Box>
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+          
+          <Box sx={{ flexGrow: 0 }} />
           
           {/* Icono del carrito de compras */}
           <IconButton
@@ -300,74 +358,8 @@ const Navbar = () => {
       </AppBar>
       {/* Toolbar adicional para compensar el espacio de la AppBar fija */}
       <Toolbar />
-      {/* Contenedor para los menús */}
-        {/* Drawer principal */}
-        <Box
-          id="main-menu"
-          sx={{
-            width: 250,
-            position: 'fixed',
-            top: '64px',
-            left: 0,
-            height: 'calc(100vh - 64px)',
-            backgroundColor: 'background.paper',
-            display: mainDrawerOpen ? 'block' : 'none',
-            zIndex: 1100,
-            boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
-            overflowY: 'auto',
-            paddingTop: '20px', // Add more padding at the top of the drawer
-            '&::-webkit-scrollbar': {
-              width: '8px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              backgroundColor: 'rgba(0,0,0,0.2)',
-              borderRadius: '4px',
-            },
-            '&::-webkit-scrollbar-track': {
-              backgroundColor: 'rgba(0,0,0,0.05)',
-            }
-          }}
-        >
-          <Box role="presentation">
-            <List>
-              <ListItem 
-                onClick={() => {
-                  console.log('Clic en Componentes');
-                  // Asegurar que el menú principal esté abierto
-                  if (!mainDrawerOpen) {
-                    setMainDrawerOpen(true);
-                  }
-                  // Alternar el estado del menú de componentes
-                  setComponentsDrawerOpen(!componentsDrawerOpen);
-                }}
-                sx={{
-                  color: componentsDrawerOpen ? '#000000' : 'inherit',
-                  fontWeight: componentsDrawerOpen ? 700 : 400,
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    color: '#dc004e'
-                  }
-                }}
-              >
-                <ListItemIcon>
-                  <DeveloperBoardIcon />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Componentes" 
-                  primaryTypographyProps={{ 
-                    fontSize: '1.1rem',
-                    fontWeight: componentsDrawerOpen ? 700 : 400
-                  }}
-                />
-                <ChevronRight />
-              </ListItem>
-            </List>
-          </Box>
-        </Box>
-
-        {/* Menú de componentes */}
-        <ComponentsMenu open={componentsDrawerOpen} mainDrawerOpen={mainDrawerOpen} />
+      {/* Menú lateral */}
+      <MenuLateral open={componentsDrawerOpen} mainDrawerOpen={true} />
     </Box>
   );
 };

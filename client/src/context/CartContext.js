@@ -85,7 +85,8 @@ export const CartProvider = ({ children }) => {
           _id: component._id,
           quantity: 1,
           name: component.name,
-          price: component.price,
+          price: component.discountPrice || component.price, // Usar precio con descuento si está disponible
+          originalPrice: component.price, // Guardar también el precio original para referencia
           image: component.image
         });
       }
@@ -196,9 +197,43 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Actualizar la cantidad de un producto directamente
+  const updateQuantity = async (itemId, newQuantity) => {
+    try {
+      // Validar que la cantidad sea un número positivo
+      if (isNaN(newQuantity) || newQuantity < 1) {
+        return false;
+      }
+      
+      // Obtener la clave del carrito según el usuario
+      const cartKey = getCartKey();
+      
+      // Actualizar el carrito local
+      const updatedCart = cartItems.map(item => {
+        if (item._id === itemId || item.component === itemId) {
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      });
+      
+      setCartItems(updatedCart);
+      localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+      
+      // Disparar evento de actualización
+      triggerCartUpdate();
+      return true;
+    } catch (error) {
+      console.error('Error al actualizar cantidad:', error);
+      return false;
+    }
+  };
+
   // Calcular el total del carrito
   const getTotal = () => {
-    return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return cartItems.reduce((sum, item) => {
+      // Usar el precio actualizado (que ya puede ser el precio con descuento)
+      return sum + (item.price * item.quantity);
+    }, 0);
   };
 
   return (
@@ -210,6 +245,7 @@ export const CartProvider = ({ children }) => {
       decreaseQuantity,
       removeItem,
       clearCart,
+      updateQuantity,
       getTotal
     }}>
       {children}
