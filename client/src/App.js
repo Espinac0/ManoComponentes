@@ -8,6 +8,17 @@ import ComputersPage from './components/pages/ComputersPage';
 import CartPage from './components/pages/CartPage';
 import Ofertas from './components/pages/Ofertas';
 import SearchPage from './components/pages/SearchPage';
+// Componentes
+import Graficas from './components/pages/componentes/Graficas';
+import PlacasBase from './components/pages/componentes/PlacasBase';
+import Procesadores from './components/pages/componentes/Procesadores';
+import DiscosDuros from './components/pages/componentes/DiscosDuros';
+import Ram from './components/pages/componentes/Ram';
+import Refrigeracion from './components/pages/componentes/Refrigeracion';
+import FuentesAlimentacion from './components/pages/componentes/FuentesAlimentacion';
+// Ordenadores
+import Portatiles from './components/pages/ordenadores/Portatiles';
+import Sobremesa from './components/pages/ordenadores/Sobremesa';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ProtectedAdminRoute from './components/auth/ProtectedAdminRoute';
@@ -56,6 +67,16 @@ const AppContent = () => {
           <Route path="/ordenadores" element={<ComputersPage />} />
           <Route path="/carrito" element={<CartPage />} />
           <Route path="/ofertas" element={<Ofertas />} />
+          <Route path="/graficas" element={<Graficas />} />
+          <Route path="/placas-base" element={<PlacasBase />} />
+          <Route path="/procesadores" element={<Procesadores />} />
+          <Route path="/discos-duros" element={<DiscosDuros />} />
+          <Route path="/ram" element={<Ram />} />
+          <Route path="/refrigeracion" element={<Refrigeracion />} />
+          <Route path="/fuentes-alimentacion" element={<FuentesAlimentacion />} />
+          {/* Rutas de ordenadores */}
+          <Route path="/portatiles" element={<Portatiles />} />
+          <Route path="/sobremesa" element={<Sobremesa />} />
           <Route path="/busqueda" element={<SearchPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

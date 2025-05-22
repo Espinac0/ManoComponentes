@@ -77,15 +77,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
           </Typography>
         </Box>
         <List sx={{ mt: 2 }}>
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/placas-base')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <DeveloperBoardIcon />
             </ListItemIcon>
@@ -97,15 +100,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/graficas')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <MemoryIcon />
             </ListItemIcon>
@@ -117,15 +123,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/procesadores')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <MemoryIcon />
             </ListItemIcon>
@@ -137,15 +146,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/discos-duros')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <StorageIcon />
             </ListItemIcon>
@@ -157,15 +169,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/refrigeracion')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <AcUnitIcon />
             </ListItemIcon>
@@ -177,35 +192,41 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/ram')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <MemoryIcon />
             </ListItemIcon>
             <ListItemText 
-              primary="RAM" 
+              primary="Memorias RAM" 
               primaryTypographyProps={{ 
                 fontSize: '1.1rem'
               }}
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/fuentes-alimentacion')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <ElectricBoltIcon />
             </ListItemIcon>
@@ -236,15 +257,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
           </Typography>
         </Box>
         <List sx={{ mt: 2 }}>
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/portatiles')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <LaptopIcon />
             </ListItemIcon>
@@ -256,15 +280,18 @@ const MenuLateral = ({ open, mainDrawerOpen }) => {
             />
           </ListItem>
 
-          <ListItem sx={{
-            '&:hover': {
-              backgroundColor: 'transparent',
-              cursor: 'pointer',
-              '& .MuiListItemText-primary': {
-                color: '#dc004e'
+          <ListItem 
+            onClick={() => navigate('/sobremesa')}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                '& .MuiListItemText-primary': {
+                  color: '#dc004e'
+                }
               }
-            }
-          }}>
+            }}
+          >
             <ListItemIcon>
               <DevicesIcon />
             </ListItemIcon>

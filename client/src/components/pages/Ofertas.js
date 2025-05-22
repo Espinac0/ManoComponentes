@@ -140,32 +140,15 @@ const Ofertas = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+        <Typography variant="h3" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
           Todas las Ofertas
         </Typography>
         <Typography variant="h5" align="center" color="text.secondary" paragraph>
-          Aprovecha nuestros mejores descuentos en componentes y ordenadores
+          ¡Aprovecha nuestros mejores descuentos en componentes y ordenadores!
         </Typography>
       </Box>
       
-      {/* Tabs for filtering */}
-      <Box sx={{ width: '100%', mb: 4 }}>
-        <Paper elevation={1} sx={{ borderRadius: 2 }}>
-          <Tabs 
-            value={tabValue} 
-            onChange={handleTabChange} 
-            variant="fullWidth" 
-            indicatorColor="primary"
-            textColor="primary"
-            aria-label="ofertas tabs"
-          >
-            <Tab icon={<DiscountIcon />} label="Todas las Ofertas" />
-            <Tab icon={<MemoryIcon />} label="Componentes" />
-            <Tab icon={<ComputerIcon />} label="Ordenadores" />
-          </Tabs>
-        </Paper>
-      </Box>
-
+     
       {/* Show error if it exists */}
       {error && (
         <Box sx={{ mb: 4 }}>
@@ -515,15 +498,20 @@ const Ofertas = () => {
                           right: 10,
                           backgroundColor: 'error.main',
                           color: 'white',
-                          padding: '4px 8px',
-                          borderRadius: '4px',
+                          borderRadius: '50%',
+                          width: 56,
+                          height: 56,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           fontWeight: 'bold',
-                          fontSize: '0.8rem',
                           zIndex: 1,
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                          boxShadow: 3
                         }}
                       >
-                        {Math.round((1 - (computer.discountPrice / computer.price)) * 100)}% OFF
+                        <Typography variant="body2" component="div" align="center" fontWeight="bold">
+                          -{Math.round((1 - (computer.discountPrice / computer.price)) * 100)}%
+                        </Typography>
                       </Box>
                     )}
                     
