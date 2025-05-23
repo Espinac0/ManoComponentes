@@ -183,7 +183,15 @@ const Procesadores = () => {
                   }}>
                     {product.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, height: '3em', overflow: 'hidden' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ 
+                    mb: 2,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2,
+                    maxHeight: '3em'
+                  }}>
                     {product.description}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -238,7 +246,9 @@ const Procesadores = () => {
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              {selectedProduct.name}
+              <Typography sx={{ color: 'black', fontWeight: 'bold', bgcolor: 'white', px: 1, py: 0.5, borderRadius: 1 }}>
+                {selectedProduct.name}
+              </Typography>
               <IconButton 
                 edge="end" 
                 color="inherit" 

@@ -217,6 +217,10 @@ const Ofertas = () => {
                   height="200"
                   image={product.image}
                   alt={product.name}
+                  sx={{ 
+                    objectFit: 'contain',
+                    padding: '10px'
+                  }}
                 />
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Typography gutterBottom variant="h5" component="h2">
@@ -550,7 +554,10 @@ const Ofertas = () => {
                       height="200"
                       image={computer.image || 'https://via.placeholder.com/300x200?text=PC'}
                       alt={computer.name}
-                      sx={{ objectFit: 'contain', p: 2 }}
+                      sx={{ 
+                        objectFit: 'contain',
+                        padding: '10px'
+                      }}
                     />
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'medium', height: '3em', overflow: 'hidden' }}>

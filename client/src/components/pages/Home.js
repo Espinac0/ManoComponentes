@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid, Card, CardContent, CardMedia, Box, Button, Paper, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableContainer, TableRow, CardActions } from '@mui/material';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { Container, Typography, Grid, Card, CardContent, CardMedia, Box, Button, IconButton, CircularProgress, Snackbar, Alert, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableBody, TableCell, TableContainer, TableRow } from '@mui/material';
 import DiscountIcon from '@mui/icons-material/LocalOffer';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InfoIcon from '@mui/icons-material/Info';
@@ -30,11 +28,6 @@ const Home = () => {
   // Get functions from cart and authentication contexts
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
-
-  // State to control the carousels
-  const [startIndex, setStartIndex] = useState(0);
-  const [computerStartIndex, setComputerStartIndex] = useState(0);
-  const itemsToShow = 4; // Number of items visible at once, pero en realidad mostramos todos
 
   // Function to fetch discounted products from the API
   useEffect(() => {
@@ -101,58 +94,6 @@ const Home = () => {
     fetchDiscountedProducts();
     fetchDiscountedComputers();
   }, []);
-
-  // Function to advance the components carousel
-  const handleNext = () => {
-    // Avanzamos de 1 en 1 para permitir ver todos los componentes
-    if (discountedProducts.length > 1) { // Si hay más de un producto
-      setStartIndex(prevIndex => {
-        // Avanzamos, pero no más allá del último producto
-        const newIndex = prevIndex + 1;
-        return newIndex < discountedProducts.length ? newIndex : prevIndex;
-      });
-    }
-  };
-
-  // Function to go back in the components carousel
-  const handlePrev = () => {
-    // Retrocedemos, pero no menos de 0
-    setStartIndex(prevIndex => Math.max(0, prevIndex - 1));
-  };
-
-  // Function to advance the computers carousel
-  const handleComputerNext = () => {
-    // Avanzamos de 1 en 1 para permitir ver todos los ordenadores
-    if (discountedComputers.length > 1) { // Si hay más de un ordenador
-      setComputerStartIndex(prevIndex => {
-        // Avanzamos, pero no más allá del último ordenador
-        const newIndex = prevIndex + 1;
-        return newIndex < discountedComputers.length ? newIndex : prevIndex;
-      });
-    }
-  };
-
-  // Function to go back in the computers carousel
-  const handleComputerPrev = () => {
-    // Retrocedemos, pero no menos de 0
-    setComputerStartIndex(prevIndex => Math.max(0, prevIndex - 1));
-  };
-
-  // Autoplay for the components carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleNext();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [startIndex]);
-  
-  // Autoplay for the computers carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleComputerNext();
-    }, 6000); // Slightly different timing to avoid synchronization
-    return () => clearInterval(interval);
-  }, [computerStartIndex]);
   
   // Effect to hide cart message after 3 seconds
   useEffect(() => {
@@ -165,27 +106,16 @@ const Home = () => {
   }, [showCartMessage]);
   
   // Function to add a product to the cart
-  const handleAddToCart = async (product) => {
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      // Show message indicating login is required
-      setCartMessage('Inicia sesión para añadir productos al carrito');
-      setShowCartMessage(true);
-      return;
-    }
+  const handleAddToCart = (product) => {
+    addToCart(product);
     
-    // Use context to add to cart
-    const success = await addToCart(product);
-    
-    if (success) {
-      // Show confirmation message
-      setCartMessage(`${product.name} añadido al carrito`);
-      setShowCartMessage(true);
+    if (isAuthenticated) {
+      setCartMessage(`${product.name} añadido al carrito correctamente`);
     } else {
-      // Show error message
-      setCartMessage('Error al añadir al carrito');
-      setShowCartMessage(true);
+      setCartMessage('Inicia sesión para guardar tu carrito permanentemente');
     }
+    
+    setShowCartMessage(true);
   };
 
   return (
@@ -211,9 +141,7 @@ const Home = () => {
         </Link>
       </Box>
 
-
-
-      {/* Carousel section with offers */}
+      {/* Componentes con ofertas */}
       <Box sx={{ mb: 6 }}>
         <Typography variant="h2" component="h2" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
           ¡Nuestras mejores ofertas en componentes!
@@ -232,48 +160,9 @@ const Home = () => {
             <Typography>No hay ofertas disponibles en este momento.</Typography>
           </Box>
         ) : (
-          <Box sx={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
-            {/* Controles del carrusel */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', position: 'absolute', top: '50%', left: 0, right: 0, zIndex: 1, transform: 'translateY(-50%)' }}>
-              <IconButton 
-                onClick={handlePrev} 
-                sx={{ 
-                  backgroundColor: 'rgba(255,255,255,0.8)', 
-                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } 
-                }}
-                disabled={startIndex === 0}
-              >
-                <ArrowBackIosNewIcon />
-              </IconButton>
-              <IconButton 
-                onClick={handleNext} 
-                sx={{ 
-                  backgroundColor: 'rgba(255,255,255,0.8)', 
-                  '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } 
-                }}
-                disabled={startIndex >= (discountedProducts.length - 1)}
-              >
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </Box>
-
-            {/* Carousel items */}
-            <Grid container spacing={3} sx={{ 
-              transition: 'transform 0.5s ease', 
-              transform: `translateX(-${startIndex * (100 / itemsToShow)}%)`,
-              flexWrap: 'nowrap',
-              overflow: 'hidden',
-              width: 'auto',
-              ml: 0,
-              '& > .MuiGrid-item': {
-                pl: 3,
-                width: `${100 / itemsToShow}%`,
-                maxWidth: `${100 / itemsToShow}%`,
-                flexShrink: 0
-              }
-            }}>
-              {discountedProducts.map((product) => (
-              <Grid item key={product._id || product.id}>
+          <Grid container spacing={3}>
+            {discountedProducts.slice(0, 4).map((product) => (
+              <Grid item key={product._id || product.id} xs={12} sm={6} md={3}>
                 <Card sx={{ 
                   height: '100%', 
                   display: 'flex', 
@@ -285,22 +174,19 @@ const Home = () => {
                     boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
                   }
                 }}>
-                  {/* Discount label */}
                   {/* Info button */}
                   <IconButton
                     sx={{
                       position: 'absolute',
                       top: 10,
                       left: 10,
-                      backgroundColor: 'rgba(255,255,255,0.9)',
-                      color: 'primary.dark',
+                      backgroundColor: 'rgba(255,255,255,0.8)',
                       zIndex: 1,
                       '&:hover': {
-                        backgroundColor: 'rgba(255,255,255,1)',
+                        backgroundColor: 'rgba(255,255,255,0.9)'
                       }
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
+                    onClick={() => {
                       setSelectedProduct(product);
                       setOpenSpecsDialog(true);
                     }}
@@ -308,7 +194,7 @@ const Home = () => {
                     <InfoIcon />
                   </IconButton>
 
-                  {/* Etiqueta de descuento */}
+                  {/* Discount label */}
                   <Box
                     sx={{
                       position: 'absolute',
@@ -334,24 +220,27 @@ const Home = () => {
 
                   <CardMedia
                     component="img"
-                    height="180"
+                    height="200"
                     image={product.image}
                     alt={product.name}
-                    sx={{ objectFit: 'contain', p: 2 }}
+                    sx={{ 
+                      objectFit: 'contain',
+                      padding: '10px'
+                    }}
                   />
-                  <CardContent sx={{ flexGrow: 1, pt: 1, pb: 1 }}>
-                    <Typography gutterBottom variant="h6" component="h2" sx={{ 
-                      fontWeight: 'medium', 
-                      minHeight: '2.5em',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h5" component="h2">
                       {product.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, height: '3em', overflow: 'hidden' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ 
+                      mb: 2,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitBoxOrient: 'vertical',
+                      WebkitLineClamp: 2,
+                      maxHeight: '3em'
+                    }}>
                       {product.description}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -380,26 +269,162 @@ const Home = () => {
               </Grid>
             ))}
           </Grid>
-          </Box>
         )}
       </Box>
-      {/* Snackbar to show cart messages */}
-      <Snackbar
-        open={showCartMessage}
-        autoHideDuration={3000}
-        onClose={() => setShowCartMessage(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert 
-          onClose={() => setShowCartMessage(false)} 
-          severity={cartMessage.includes('Error') || cartMessage.includes('Inicia sesión') ? 'warning' : 'success'}
-          sx={{ width: '100%' }}
-        >
-          {cartMessage}
-        </Alert>
-      </Snackbar>
 
-      {/* Dialog to show product specifications */}
+      {/* Discounted Computers Section */}
+      {discountedComputers.length > 0 && (
+        <Box sx={{ mt: 8, mb: 4 }}>
+          <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black' }}>
+            Ordenadores en Oferta
+          </Typography>
+          <Typography variant="h6" align="center" color="text.secondary" paragraph>
+            ¡Consigue un ordenador completo a precio de ganga!
+          </Typography>
+
+          {loadingComputers ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : computerError ? (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Typography color="error">{computerError}</Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={3}>
+              {discountedComputers.slice(0, 4).map((computer) => (
+                <Grid item xs={12} sm={6} md={3} key={computer._id || computer.id}>
+                  <Card 
+                    sx={{ 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      transition: 'transform 0.3s',
+                      '&:hover': {
+                        transform: 'scale(1.03)',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+                      },
+                      position: 'relative'
+                    }}
+                  >
+                    {/* Discount badge */}
+                    {computer.discountPrice && computer.price > computer.discountPrice && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                          backgroundColor: 'error.main',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: 56,
+                          height: 56,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 'bold',
+                          zIndex: 1,
+                          boxShadow: 3
+                        }}
+                      >
+                        <Typography variant="body2" component="div" align="center" fontWeight="bold">
+                          -{computer.discountPercentage}%
+                        </Typography>
+                      </Box>
+                    )}
+                    
+                    {/* Info button */}
+                    <IconButton
+                      sx={{
+                        position: 'absolute',
+                        top: 10,
+                        left: 10,
+                        backgroundColor: 'rgba(255,255,255,0.8)',
+                        zIndex: 1,
+                        '&:hover': {
+                          backgroundColor: 'rgba(255,255,255,0.9)'
+                        }
+                      }}
+                      onClick={() => {
+                        setSelectedComputer(computer);
+                        setOpenComputerSpecsDialog(true);
+                      }}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                    
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={computer.image}
+                      alt={computer.name}
+                      sx={{ 
+                        objectFit: 'contain', 
+                        padding: '10px'
+                      }}
+                    />
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        {computer.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ 
+                        mb: 2,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2,
+                        maxHeight: '3em'
+                      }}>
+                        {computer.description}
+                      </Typography>
+                      
+                      {/* Price display */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body1" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                          {computer.originalPrice.toFixed(2)}€
+                        </Typography>
+                        <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold' }}>
+                          {computer.discountPrice.toFixed(2)}€
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                    
+                    {/* Add to cart button */}
+                    <Box sx={{ p: 2, pt: 0 }}>
+                      <Tooltip title={isAuthenticated ? "Añadir al carrito" : "Inicia sesión para añadir al carrito"} arrow>
+                        <Button 
+                          variant="contained" 
+                          fullWidth 
+                          color="secondary"
+                          startIcon={<AddShoppingCartIcon />}
+                          onClick={() => handleAddToCart(computer)}
+                        >
+                          Añadir al carrito
+                        </Button>
+                      </Tooltip>
+                    </Box>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+          
+          {/* View all button */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+            <Button 
+              variant="outlined" 
+              color="primary" 
+              component={Link} 
+              to="/ofertas"
+            >
+              Ver todas las ofertas
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {/* Product Specs Dialog */}
       <Dialog
         open={openSpecsDialog}
         onClose={() => setOpenSpecsDialog(false)}
@@ -423,10 +448,6 @@ const Home = () => {
                 position: 'absolute',
                 top: 8,
                 right: 8,
-                backgroundColor: 'rgba(0,0,0,0.05)',
-                '&:hover': {
-                  backgroundColor: 'rgba(0,0,0,0.1)'
-                },
                 zIndex: 1
               }}
             >
@@ -476,18 +497,19 @@ const Home = () => {
                         'Form_factor': 'Forma',
                         'Chipset': 'Chipset',
                         'Ram_slots': 'Huecos de RAM',
-                        'Max_ram': 'RAM máxima',
-                        'Max ram': 'RAM máxima',
                         'Socket': 'Socket',
+                        'Pci_slots': 'Ranuras PCI',
+                        'Expansion_slots': 'Ranuras de expansión',
+                        'Sata_ports': 'Puertos SATA',
+                        'M2_slots': 'Ranuras M.2',
+                        'Usb_ports': 'Puertos USB',
+                        'Max_memory': 'Memoria máxima',
+                        'Memory_type': 'Tipo de memoria',
+                        'Memory_speed': 'Velocidad de memoria',
                         'Cores': 'Núcleos',
                         'Threads': 'Hilos',
-                        'Clock speed': 'Velocidad',
-                        'Clock_speed': 'Velocidad',
-                        'Memory type': 'Tipo de memoria',
-                        'Memory_type': 'Tipo de memoria',
-                        'Capacity': 'Capacidad',
-                        'Interface': 'Interfaz',
-                        'Rpm': 'RPM',
+                        'Base_clock': 'Frecuencia base',
+                        'Boost_clock': 'Frecuencia turbo',
                         'Cache': 'Caché',
                         'Tdp': 'TDP',
                         'Wattage': 'Potencia',
@@ -563,212 +585,6 @@ const Home = () => {
         )}
       </Dialog>
 
-      {/* Discounted Computers Section */}
-      {discountedComputers.length > 0 && (
-        <Box sx={{ mt: 8, mb: 4 }}>
-          <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black' }}>
-            Ordenadores en Oferta
-          </Typography>
-          <Typography variant="h6" align="center" color="text.secondary" paragraph>
-            ¡Consigue un ordenador completo a precio de ganga!
-          </Typography>
-          
-          {/* Computer Carousel */}
-          <Box sx={{ position: 'relative', mt: 4 }}>
-            {/* Previous button */}
-            <IconButton 
-              onClick={handleComputerPrev} 
-              sx={{ 
-                position: 'absolute', 
-                left: -20, 
-                top: '50%', 
-                transform: 'translateY(-50%)', 
-                zIndex: 2,
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
-              }}
-              disabled={computerStartIndex === 0}
-            >
-              <ArrowBackIosNewIcon />
-            </IconButton>
-            
-            {/* Computer Cards */}
-            <Grid container spacing={3} sx={{ 
-              px: 2,
-              flexWrap: 'nowrap',
-              overflow: 'hidden',
-              transition: 'transform 0.5s ease', 
-              transform: `translateX(-${computerStartIndex * (100 / itemsToShow)}%)`,
-              width: 'auto',
-              ml: 0,
-              '& > .MuiGrid-item': {
-                pl: 3,
-                width: `${100 / itemsToShow}%`,
-                maxWidth: `${100 / itemsToShow}%`,
-                flexShrink: 0
-              }
-            }}>
-              {loadingComputers ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', py: 4 }}>
-                  <CircularProgress />
-                </Box>
-              ) : computerError ? (
-                <Box sx={{ width: '100%', textAlign: 'center', py: 4 }}>
-                  <Typography color="error">{computerError}</Typography>
-                </Box>
-              ) : (
-                discountedComputers.map((computer) => (
-                  <Grid item key={computer._id || computer.id}>
-                      <Card 
-                        sx={{ 
-                          height: '100%', 
-                          display: 'flex', 
-                          flexDirection: 'column',
-                          transition: 'transform 0.3s',
-                          '&:hover': {
-                            transform: 'scale(1.03)',
-                            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
-                          },
-                          position: 'relative'
-                        }}
-                      >
-                        {/* Discount badge */}
-                        {computer.discountPrice && computer.price > computer.discountPrice && (
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              top: 10,
-                              right: 10,
-                              backgroundColor: 'error.main',
-                              color: 'white',
-                              borderRadius: '50%',
-                              width: 56,
-                              height: 56,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontWeight: 'bold',
-                              zIndex: 1,
-                              boxShadow: 3
-                            }}
-                          >
-                            <Typography variant="body2" component="div" align="center" fontWeight="bold">
-                              -{Math.round((1 - (computer.discountPrice / computer.price)) * 100)}%
-                            </Typography>
-                          </Box>
-                        )}
-                        
-                        {/* Info button */}
-                        <IconButton
-                          sx={{
-                            position: 'absolute',
-                            top: 10,
-                            left: 10,
-                            backgroundColor: 'rgba(255,255,255,0.9)',
-                            color: 'primary.dark',
-                            zIndex: 1,
-                            '&:hover': {
-                              backgroundColor: 'rgba(255,255,255,1)',
-                            }
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedComputer(computer);
-                            setOpenComputerSpecsDialog(true);
-                          }}
-                        >
-                          <InfoIcon />
-                        </IconButton>
-                        
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          image={computer.image || 'https://via.placeholder.com/300x200?text=PC'}
-                          alt={computer.name}
-                          sx={{ objectFit: 'contain', p: 2 }}
-                        />
-                        <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'medium', height: '3em', overflow: 'hidden' }}>
-                            {computer.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                            {computer.type === 'laptop' ? 'Portátil' : 'Sobremesa'}
-                          </Typography>
-                          
-                          {computer.discountPrice ? (
-                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                              <Typography variant="h6" color="error" sx={{ fontWeight: 'bold' }}>
-                                {computer.discountPrice.toFixed(2)}€
-                              </Typography>
-                              <Typography 
-                                variant="body2" 
-                                sx={{ 
-                                  textDecoration: 'line-through', 
-                                  color: 'text.secondary',
-                                  ml: 1
-                                }}
-                              >
-                                {computer.price.toFixed(2)}€
-                              </Typography>
-                            </Box>
-                          ) : (
-                            <Typography variant="h6" color="text.primary" sx={{ fontWeight: 'bold', mt: 1 }}>
-                              {computer.price.toFixed(2)}€
-                            </Typography>
-                          )}
-                        </CardContent>
-                        <CardActions>
-                          <Tooltip title={isAuthenticated ? "Añadir al carrito" : "Inicia sesión para añadir al carrito"} arrow>
-                            <Button 
-                              variant="contained" 
-                              color="secondary" 
-                              startIcon={<AddShoppingCartIcon />}
-                              onClick={() => handleAddToCart(computer)}
-                              fullWidth
-                            >
-                              Añadir al carrito
-                            </Button>
-                          </Tooltip>
-                        </CardActions>
-                      </Card>
-                    </Grid>
-                  ))
-              )}
-            </Grid>
-            
-            {/* Next button */}
-            <IconButton 
-              onClick={handleComputerNext} 
-              sx={{ 
-                position: 'absolute', 
-                right: -20, 
-                top: '50%', 
-                transform: 'translateY(-50%)', 
-                zIndex: 2,
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
-              }}
-              disabled={computerStartIndex >= (discountedComputers.length - 1)}
-            >
-              <ArrowForwardIosIcon />
-            </IconButton>
-          </Box>
-          
-          {/* View all button */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-            <Button 
-              variant="outlined" 
-              color="primary" 
-              component={Link} 
-              to="/ofertas"
-              endIcon={<ArrowForwardIosIcon />}
-            >
-              Ver todas las ofertas
-            </Button>
-          </Box>
-        </Box>
-      )}
-
       {/* Computer Specs Dialog */}
       <Dialog
         open={openComputerSpecsDialog}
@@ -791,46 +607,45 @@ const Home = () => {
                 <Grid item xs={12} md={5}>
                   <CardMedia
                     component="img"
-                    image={selectedComputer.image || 'https://via.placeholder.com/500x400?text=PC'}
+                    image={selectedComputer.image}
                     alt={selectedComputer.name}
-                    sx={{ width: '100%', height: 'auto', maxHeight: 400, objectFit: 'contain' }}
+                    sx={{ 
+                      height: 'auto', 
+                      width: '100%', 
+                      objectFit: 'contain',
+                      borderRadius: 1,
+                      mb: 2
+                    }}
                   />
-                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                    {selectedComputer.discountPrice && selectedComputer.discountPrice < selectedComputer.price ? (
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Typography variant="body1" color="text.secondary" sx={{ textDecoration: 'line-through', mr: 1 }}>
-                          {selectedComputer.price.toFixed(2)}€
-                        </Typography>
-                        <Typography variant="h5" color="error.main" sx={{ fontWeight: 'bold' }}>
-                          {selectedComputer.discountPrice.toFixed(2)}€
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                        {selectedComputer.price.toFixed(2)}€
-                      </Typography>
-                    )}
-                  </Box>
-                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
-                      startIcon={<AddShoppingCartIcon />}
-                      onClick={() => {
-                        handleAddToCart(selectedComputer);
-                        setOpenComputerSpecsDialog(false);
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'center', mb: 2 }}>
+                    <Typography variant="h6" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                      {selectedComputer.originalPrice.toFixed(2)}€
+                    </Typography>
+                    <Typography variant="h5" color="error.main" sx={{ fontWeight: 'bold' }}>
+                      {selectedComputer.discountPrice.toFixed(2)}€
+                    </Typography>
+                    <Box
+                      sx={{
+                        backgroundColor: 'error.main',
+                        color: 'white',
+                        borderRadius: '12px',
+                        px: 1.5,
+                        py: 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 0.5
                       }}
-                      sx={{ minWidth: 200 }}
                     >
-                      Añadir al carrito
-                    </Button>
+                      <DiscountIcon fontSize="small" />
+                      <Typography variant="body2" fontWeight="bold">
+                        {selectedComputer.discountPercentage}% OFF
+                      </Typography>
+                    </Box>
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={7}>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Especificaciones
-                  </Typography>
-                  <TableContainer component={Paper} variant="outlined">
+                  <Typography variant="h6" gutterBottom>Especificaciones:</Typography>
+                  <TableContainer>
                     <Table>
                       <TableBody>
                         <TableRow>
@@ -847,15 +662,15 @@ const Home = () => {
                         </TableRow>
                         <TableRow>
                           <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
-                            Tarjeta Gráfica
-                          </TableCell>
-                          <TableCell>{selectedComputer.specs?.graphics}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
                             Memoria RAM
                           </TableCell>
                           <TableCell>{selectedComputer.specs?.ram}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                            Tarjeta Gráfica
+                          </TableCell>
+                          <TableCell>{selectedComputer.specs?.graphics}</TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>

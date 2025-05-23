@@ -231,7 +231,9 @@ const Sobremesa = () => {
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              {selectedProduct.name}
+              <Typography sx={{ color: 'black', fontWeight: 'bold', bgcolor: 'white', px: 1, py: 0.5, borderRadius: 1 }}>
+                {selectedProduct.name}
+              </Typography>
               <IconButton 
                 edge="end" 
                 color="inherit" 

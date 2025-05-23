@@ -328,6 +328,17 @@ const ComponentsPage = () => {
                       <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'medium', height: '3em', overflow: 'hidden' }}>
                         {component.name}
                       </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ 
+                        mb: 2,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: 2,
+                        maxHeight: '3em'
+                      }}>
+                        {component.description}
+                      </Typography>
                       {component.discountPrice ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                           <Typography variant="h6" color="error" sx={{ fontWeight: 'bold' }}>
@@ -406,7 +417,7 @@ const ComponentsPage = () => {
             </IconButton>
             
             <DialogTitle sx={{ textAlign: 'center', pt: 0 }}>
-              <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+              <Typography variant="h6" component="div" sx={{ color: 'black', fontWeight: 'bold', bgcolor: 'white', px: 2, py: 1, borderRadius: 1, display: 'inline-block', border: '1px solid #eee' }}>
                 {selectedComponent.name}
               </Typography>
             </DialogTitle>
