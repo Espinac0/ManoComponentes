@@ -281,7 +281,7 @@ const Navbar = () => {
             id="menu-cart"
             anchorEl={cartAnchorEl}
             anchorOrigin={{
-              vertical: 'top',
+              vertical: 'bottom',
               horizontal: 'right',
             }}
             keepMounted
@@ -291,6 +291,7 @@ const Navbar = () => {
             }}
             open={Boolean(cartAnchorEl)}
             onClose={handleCartClose}
+            sx={{ mt: 1 }}
           >
             <MenuItem onClick={goToCart}>Ver carrito</MenuItem>
           </Menu>
@@ -330,7 +331,7 @@ const Navbar = () => {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                  vertical: 'top',
+                  vertical: 'bottom',
                   horizontal: 'right',
                 }}
                 keepMounted
@@ -340,6 +341,7 @@ const Navbar = () => {
                 }}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
+                sx={{ mt: 1 }}
               >
                 <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
               </Menu>

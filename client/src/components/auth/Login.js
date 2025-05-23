@@ -127,8 +127,8 @@ const Login = () => {
                   <VerifiedIcon style={{ fontSize: 40, color: '#1976d2' }} />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Lista de deseos personalizada"
-                  secondary="Guarda tus productos favoritos en las listas de deseos personalizadas"
+                  primary="Entérate de nuestras mejores ofertas"
+                  secondary="Podrás ver siempre nuestros mejores artículos con las mejores ofertas"
                   primaryTypographyProps={{ style: { fontSize: '1.5rem', fontWeight: 500, marginBottom: '8px' } }}
                   secondaryTypographyProps={{ style: { fontSize: '1rem' } }}
                 />

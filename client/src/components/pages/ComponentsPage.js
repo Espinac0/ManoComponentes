@@ -94,32 +94,62 @@ const ComponentsPage = () => {
 
   // Function to determine the category of a component
   const determineCategory = (component) => {
-    // Check name and category to determine the type
+    // Check name, category and type to determine the component category
     const name = (component.name || '').toLowerCase();
     const category = (component.category || '').toLowerCase();
+    const type = (component.type || '').toLowerCase();
     
-    if (name.includes('placa') || name.includes('motherboard') || category.includes('placa') || category.includes('motherboard')) {
-      return 'motherboard';
-    }
-    if (name.includes('procesador') || name.includes('cpu') || name.includes('ryzen') || name.includes('intel') || category.includes('procesador') || category.includes('cpu')) {
-      return 'cpu';
-    }
-    if (name.includes('gráfica') || name.includes('gpu') || name.includes('geforce') || name.includes('radeon') || category.includes('gráfica') || category.includes('gpu')) {
-      return 'gpu';
-    }
-    if (name.includes('ram') || name.includes('memoria') || category.includes('ram') || category.includes('memoria')) {
-      return 'ram';
-    }
-    if (name.includes('disco') || name.includes('ssd') || name.includes('hdd') || name.includes('storage') || category.includes('disco') || category.includes('almacenamiento')) {
-      return 'storage';
-    }
-    if (name.includes('refrigera') || name.includes('cooling') || name.includes('ventilador') || name.includes('fan') || category.includes('refrigera') || category.includes('cooling')) {
+    // Primero verificamos si es un componente de refrigeración (prioridad máxima)
+    // ya que muchos coolers pueden contener palabras como "CPU" o "Intel" en su nombre
+    if (type === 'cooling' || type === 'refrigeración' || type === 'cooler' || 
+        name.includes('cooler') || name.includes('cooling') || 
+        name.includes('refrigera') || name.includes('ventilador') || 
+        name.includes('disipador') || name.includes('fan') || 
+        name.includes('temperature') || 
+        category.includes('refrigera') || category.includes('cooling')) {
       return 'cooling';
     }
-    if (name.includes('fuente') || name.includes('alimentación') || name.includes('psu') || name.includes('power') || category.includes('fuente') || category.includes('alimentación')) {
+    
+    // Luego verificamos el resto de categorías
+    if (name.includes('placa') || name.includes('motherboard') || 
+        type === 'motherboard' || type === 'placa base' || 
+        category.includes('placa') || category.includes('motherboard')) {
+      return 'motherboard';
+    }
+    
+    if (name.includes('procesador') || (name.includes('cpu') && !name.includes('cooler')) || 
+        name.includes('ryzen') || (name.includes('intel') && !name.includes('ventilador') && !name.includes('disipador')) || 
+        type === 'cpu' || type === 'processor' || type === 'procesador' || 
+        category.includes('procesador') || category.includes('cpu')) {
+      return 'cpu';
+    }
+    
+    if (name.includes('gráfica') || name.includes('gpu') || 
+        name.includes('geforce') || name.includes('radeon') || 
+        type === 'gpu' || type === 'graphics card' || type === 'tarjeta gráfica' || 
+        category.includes('gráfica') || category.includes('gpu')) {
+      return 'gpu';
+    }
+    
+    if (name.includes('ram') || name.includes('memoria') || 
+        type === 'ram' || type === 'memory' || type === 'memoria' || 
+        category.includes('ram') || category.includes('memoria')) {
+      return 'ram';
+    }
+    
+    if (name.includes('disco') || name.includes('ssd') || name.includes('hdd') || name.includes('storage') || 
+        type === 'storage' || type === 'hdd' || type === 'ssd' || type === 'disco duro' || type === 'almacenamiento' || 
+        category.includes('disco') || category.includes('almacenamiento')) {
+      return 'storage';
+    }
+    
+    if (name.includes('fuente') || name.includes('alimentación') || name.includes('psu') || name.includes('power') || 
+        type === 'psu' || type === 'power supply' || type === 'fuente de alimentación' || 
+        category.includes('fuente') || category.includes('alimentación')) {
       return 'psu';
     }
     
+    // Si no encaja en ninguna categoría
     return 'other';
   };
   

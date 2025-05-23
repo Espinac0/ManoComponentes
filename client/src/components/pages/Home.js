@@ -34,7 +34,7 @@ const Home = () => {
   // State to control the carousels
   const [startIndex, setStartIndex] = useState(0);
   const [computerStartIndex, setComputerStartIndex] = useState(0);
-  const itemsToShow = 4; // Number of items to show at once
+  const itemsToShow = 4; // Number of items visible at once, pero en realidad mostramos todos
 
   // Function to fetch discounted products from the API
   useEffect(() => {
@@ -104,30 +104,38 @@ const Home = () => {
 
   // Function to advance the components carousel
   const handleNext = () => {
-    setStartIndex((prevIndex) => 
-      (prevIndex + 1) % (discountedProducts.length - itemsToShow + 1) || 0
-    );
+    // Avanzamos de 1 en 1 para permitir ver todos los componentes
+    if (discountedProducts.length > 1) { // Si hay más de un producto
+      setStartIndex(prevIndex => {
+        // Avanzamos, pero no más allá del último producto
+        const newIndex = prevIndex + 1;
+        return newIndex < discountedProducts.length ? newIndex : prevIndex;
+      });
+    }
   };
 
   // Function to go back in the components carousel
   const handlePrev = () => {
-    setStartIndex((prevIndex) => 
-      prevIndex === 0 ? discountedProducts.length - itemsToShow : prevIndex - 1
-    );
+    // Retrocedemos, pero no menos de 0
+    setStartIndex(prevIndex => Math.max(0, prevIndex - 1));
   };
 
   // Function to advance the computers carousel
   const handleComputerNext = () => {
-    setComputerStartIndex((prevIndex) => 
-      (prevIndex + 1) % (discountedComputers.length - itemsToShow + 1) || 0
-    );
+    // Avanzamos de 1 en 1 para permitir ver todos los ordenadores
+    if (discountedComputers.length > 1) { // Si hay más de un ordenador
+      setComputerStartIndex(prevIndex => {
+        // Avanzamos, pero no más allá del último ordenador
+        const newIndex = prevIndex + 1;
+        return newIndex < discountedComputers.length ? newIndex : prevIndex;
+      });
+    }
   };
 
   // Function to go back in the computers carousel
   const handleComputerPrev = () => {
-    setComputerStartIndex((prevIndex) => 
-      prevIndex === 0 ? discountedComputers.length - itemsToShow : prevIndex - 1
-    );
+    // Retrocedemos, pero no menos de 0
+    setComputerStartIndex(prevIndex => Math.max(0, prevIndex - 1));
   };
 
   // Autoplay for the components carousel
@@ -208,7 +216,7 @@ const Home = () => {
       {/* Carousel section with offers */}
       <Box sx={{ mb: 6 }}>
         <Typography variant="h2" component="h2" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
-          Nuestras mejores ofertas!
+          ¡Nuestras mejores ofertas en componentes!
         </Typography>
 
         {loading ? (
@@ -233,7 +241,7 @@ const Home = () => {
                   backgroundColor: 'rgba(255,255,255,0.8)', 
                   '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } 
                 }}
-                disabled={discountedProducts.length <= itemsToShow}
+                disabled={startIndex === 0}
               >
                 <ArrowBackIosNewIcon />
               </IconButton>
@@ -243,16 +251,29 @@ const Home = () => {
                   backgroundColor: 'rgba(255,255,255,0.8)', 
                   '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' } 
                 }}
-                disabled={discountedProducts.length <= itemsToShow}
+                disabled={startIndex >= (discountedProducts.length - 1)}
               >
                 <ArrowForwardIosIcon />
               </IconButton>
             </Box>
 
             {/* Carousel items */}
-            <Grid container spacing={3} sx={{ transition: 'transform 0.5s ease', transform: `translateX(-${startIndex * (100 / itemsToShow)}%)` }}>
+            <Grid container spacing={3} sx={{ 
+              transition: 'transform 0.5s ease', 
+              transform: `translateX(-${startIndex * (100 / itemsToShow)}%)`,
+              flexWrap: 'nowrap',
+              overflow: 'hidden',
+              width: 'auto',
+              ml: 0,
+              '& > .MuiGrid-item': {
+                pl: 3,
+                width: `${100 / itemsToShow}%`,
+                maxWidth: `${100 / itemsToShow}%`,
+                flexShrink: 0
+              }
+            }}>
               {discountedProducts.map((product) => (
-              <Grid item key={product.id} xs={12 / itemsToShow} sx={{ flexShrink: 0 }}>
+              <Grid item key={product._id || product.id}>
                 <Card sx={{ 
                   height: '100%', 
                   display: 'flex', 
@@ -545,7 +566,7 @@ const Home = () => {
       {/* Discounted Computers Section */}
       {discountedComputers.length > 0 && (
         <Box sx={{ mt: 8, mb: 4 }}>
-          <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black' }}>
             Ordenadores en Oferta
           </Typography>
           <Typography variant="h6" align="center" color="text.secondary" paragraph>
@@ -566,13 +587,27 @@ const Home = () => {
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
                 '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
               }}
-              disabled={discountedComputers.length <= itemsToShow}
+              disabled={computerStartIndex === 0}
             >
               <ArrowBackIosNewIcon />
             </IconButton>
             
             {/* Computer Cards */}
-            <Grid container spacing={3} sx={{ px: 2 }}>
+            <Grid container spacing={3} sx={{ 
+              px: 2,
+              flexWrap: 'nowrap',
+              overflow: 'hidden',
+              transition: 'transform 0.5s ease', 
+              transform: `translateX(-${computerStartIndex * (100 / itemsToShow)}%)`,
+              width: 'auto',
+              ml: 0,
+              '& > .MuiGrid-item': {
+                pl: 3,
+                width: `${100 / itemsToShow}%`,
+                maxWidth: `${100 / itemsToShow}%`,
+                flexShrink: 0
+              }
+            }}>
               {loadingComputers ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', py: 4 }}>
                   <CircularProgress />
@@ -582,10 +617,8 @@ const Home = () => {
                   <Typography color="error">{computerError}</Typography>
                 </Box>
               ) : (
-                discountedComputers
-                  .slice(computerStartIndex, computerStartIndex + itemsToShow)
-                  .map((computer) => (
-                    <Grid item xs={12} sm={6} md={3} key={computer._id}>
+                discountedComputers.map((computer) => (
+                  <Grid item key={computer._id || computer.id}>
                       <Card 
                         sx={{ 
                           height: '100%', 
@@ -715,7 +748,7 @@ const Home = () => {
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
                 '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.9)' }
               }}
-              disabled={discountedComputers.length <= itemsToShow}
+              disabled={computerStartIndex >= (discountedComputers.length - 1)}
             >
               <ArrowForwardIosIcon />
             </IconButton>

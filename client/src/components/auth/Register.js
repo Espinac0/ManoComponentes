@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Paper, TextField, Button, Typography, Box, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Container, Paper, TextField, Button, Typography, Alert, Grid, Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../services/api';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -118,89 +121,187 @@ const Register = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Paper elevation={6} sx={{ mt: 8, p: 4 }}>
-        <Typography component="h1" variant="h5" align="center">
-          Registro
-        </Typography>
-        {Object.keys(errors).length > 0 && (
-          <Box sx={{ mt: 2 }}>
-            {Object.entries(errors).map(([field, message]) => (
-              <Alert key={field} severity="error" sx={{ mb: 1 }}>
-                {message}
-              </Alert>
-            ))}
+    <Container maxWidth="none" style={{ height: '100vh', padding: 0, position: 'relative' }}>
+      <Box 
+        component={Link}
+        to="/"
+        sx={{
+          position: 'absolute',
+          top: '32px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 2,
+          display: 'block',
+          cursor: 'pointer',
+          '&:hover': {
+            transform: 'translateX(-50%) scale(1.05)',
+            transition: 'transform 0.2s ease-in-out'
+          }
+        }}
+      >
+        <img 
+          src="/logo.png" 
+          alt="Logo" 
+          style={{ 
+            width: '300px'
+          }} 
+        />
+      </Box>
+      <Grid container style={{ height: '100%' }}>
+        {/* Panel izquierdo */}
+        <Grid item xs={6} style={{ 
+          backgroundColor: '#ffffff', 
+          padding: '48px',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative'
+        }}>
+          {/* Línea divisoria vertical */}
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: '150px',
+              height: 'calc(100% - 200px)',
+              width: '1px',
+              backgroundColor: '#e0e0e0'
+            }}
+          />
+          <Box style={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            justifyContent: 'center',
+            height: '100%'
+          }}>
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <LocalShippingIcon style={{ fontSize: 40, color: '#1976d2' }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Gestiona tus pedidos"
+                  secondary="Ten el control de todos tus pedidos y recibe notificaciones con el seguimiento"
+                  primaryTypographyProps={{ style: { fontSize: '1.5rem', fontWeight: 500, marginBottom: '8px' } }}
+                  secondaryTypographyProps={{ style: { fontSize: '1rem' } }}
+                />
+              </ListItem>
+              <ListItem style={{ marginTop: '32px' }}>
+                <ListItemIcon>
+                  <VerifiedIcon style={{ fontSize: 40, color: '#1976d2' }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Entérate de nuestras mejores ofertas"
+                  secondary="Podrás ver siempre nuestros mejores artículos con las mejores ofertas"
+                  primaryTypographyProps={{ style: { fontSize: '1.5rem', fontWeight: 500, marginBottom: '8px' } }}
+                  secondaryTypographyProps={{ style: { fontSize: '1rem' } }}
+                />
+              </ListItem>
+            </List>
           </Box>
-        )}
-        {success && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            {success}
-          </Alert>
-        )}
-        <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Nombre"
-            name="name"
-            autoComplete="name"
-            autoFocus
-            value={name}
-            onChange={onChange}
-            error={!!errors.name}
-            helperText={errors.name}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={onChange}
-            error={!!errors.email}
-            helperText={errors.email}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Contraseña"
-            type="password"
-            id="password"
-            value={password}
-            onChange={onChange}
-            error={!!errors.password}
-            helperText={errors.password}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password2"
-            label="Confirmar Contraseña"
-            type="password"
-            id="password2"
-            value={password2}
-            onChange={onChange}
-            error={!!errors.password2}
-            helperText={errors.password2}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Registrarse
-          </Button>
-        </Box>
-      </Paper>
+        </Grid>
+
+        {/* Panel derecho - Formulario de registro */}
+        <Grid item xs={6} style={{ 
+          backgroundColor: '#ffffff',
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px'
+        }}>
+          <Box style={{ 
+            maxWidth: '400px',
+            width: '100%',
+          }}>
+            <Typography variant="h4" component="h1" align="center" gutterBottom>
+              Crear cuenta
+            </Typography>
+            {Object.keys(errors).length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                {Object.entries(errors).map(([field, message]) => (
+                  <Alert key={field} severity="error" sx={{ mb: 1 }}>
+                    {message}
+                  </Alert>
+                ))}
+              </Box>
+            )}
+            {success && (
+              <Alert severity="success" sx={{ mb: 3 }}>
+                {success}
+              </Alert>
+            )}
+            <Box component="form" onSubmit={onSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="name"
+                label="Nombre"
+                name="name"
+                autoComplete="name"
+                autoFocus
+                value={name}
+                onChange={onChange}
+                error={!!errors.name}
+                helperText={errors.name}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={onChange}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Contraseña"
+                type="password"
+                id="password"
+                value={password}
+                onChange={onChange}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password2"
+                label="Confirmar Contraseña"
+                type="password"
+                id="password2"
+                value={password2}
+                onChange={onChange}
+                error={!!errors.password2}
+                helperText={errors.password2}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Crear cuenta
+              </Button>
+              
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
+                <Typography variant="body2">
+                  ¿Ya tienes cuenta? <Link to="/login" style={{ color: '#1976d2', textDecoration: 'none' }}>Iniciar sesión</Link>
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
     </Container>
   );
 };

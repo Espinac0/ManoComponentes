@@ -163,7 +163,7 @@ const Ofertas = () => {
         </Box>
       ) : (
         <Grid container spacing={4}>
-          {discountedProducts.map((product) => (
+          {discountedProducts.slice(0, 6).map((product) => (
             <Grid item key={product.id} xs={12} sm={6} md={4}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                 {/* Info button */}
@@ -222,7 +222,15 @@ const Ofertas = () => {
                   <Typography gutterBottom variant="h5" component="h2">
                     {product.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ 
+                    mb: 2,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2, // Limita a 2 líneas
+                    maxHeight: '3em' // Altura máxima aproximada para 2 líneas
+                  }}>
                     {product.description}
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -474,7 +482,7 @@ const Ofertas = () => {
           ) : (
             /* Grid of discounted computers */
             <Grid container spacing={4}>
-              {discountedComputers.map((computer) => (
+              {discountedComputers.slice(0, 6).map((computer) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={computer._id}>
                   <Card 
                     sx={{ 

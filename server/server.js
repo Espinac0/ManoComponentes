@@ -6,7 +6,6 @@ const authRoutes = require('./routes/auth');
 const componentRoutes = require('./routes/components');
 const computerRoutes = require('./routes/computers');
 const initRoutes = require('./routes/init');
-const cartRoutes = require('./routes/cart');
 
 const app = express();
 
@@ -39,7 +38,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/components', componentRoutes);
 app.use('/api/computers', computerRoutes);
 app.use('/api/init', initRoutes);
-app.use('/api/cart', cartRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

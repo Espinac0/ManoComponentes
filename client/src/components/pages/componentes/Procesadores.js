@@ -34,10 +34,20 @@ const Procesadores = () => {
         
         // Filtrar procesadores usando el campo 'type'
         const procesadores = response.data.filter(product => {
+          // Excluir explícitamente componentes de refrigeración
+          if (product.type === 'Cooling' || 
+              product.type === 'Refrigeración' ||
+              (product.name && product.name.toLowerCase().includes('refrigera')) ||
+              (product.name && product.name.toLowerCase().includes('cooling')) ||
+              (product.name && product.name.toLowerCase().includes('cooler'))) {
+            return false;
+          }
+          
+          // Incluir solo los procesadores
           return product.type === 'CPU' || product.type === 'Processor' || 
                  (product.name && product.name.toLowerCase().includes('procesador')) ||
                  (product.name && product.name.toLowerCase().includes('ryzen')) ||
-                 (product.name && product.name.toLowerCase().includes('intel'));
+                 (product.name && (product.name.toLowerCase().includes('intel') && !product.name.toLowerCase().includes('refrigera')));
         });
         
         console.log('Procesadores encontrados:', procesadores);
