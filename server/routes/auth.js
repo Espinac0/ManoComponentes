@@ -123,23 +123,95 @@ router.post('/login', [
 
 // Obtener usuario autenticado
 router.get('/me', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error del servidor');
-  }
-});
-
-// Obtener usuario autenticado
-router.get('/me', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
         res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// @route   GET api/auth/users
+// @desc    Obtener todos los usuarios (solo admin)
+// @access  Private/Admin
+router.get('/users', auth, async (req, res) => {
+    try {
+        // Verificar si el usuario es administrador
+        const user = await User.findById(req.user.id).select('-password');
+        if (user.role !== 'admin') {
+            return res.status(403).json({ msg: 'Acceso denegado' });
+        }
+
+        const users = await User.find().select('-password');
+        res.json(users);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// @route   PUT api/auth/users/:id
+// @desc    Actualizar un usuario
+// @access  Private/Admin
+router.put('/users/:id', auth, async (req, res) => {
+    try {
+        // Verificar si el usuario es administrador
+        const adminUser = await User.findById(req.user.id).select('-password');
+        if (adminUser.role !== 'admin') {
+            return res.status(403).json({ msg: 'Acceso denegado' });
+        }
+
+        const { name, email, role } = req.body;
+        const userFields = {};
+        if (name) userFields.name = name;
+        if (email) userFields.email = email;
+        if (role) userFields.role = role;
+
+        let user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        user = await User.findByIdAndUpdate(
+            req.params.id,
+            { $set: userFields },
+            { new: true }
+        ).select('-password');
+
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
+
+// @route   DELETE api/auth/users/:id
+// @desc    Eliminar un usuario
+// @access  Private/Admin
+router.delete('/users/:id', auth, async (req, res) => {
+    try {
+        // Verificar si el usuario es administrador
+        const adminUser = await User.findById(req.user.id).select('-password');
+        if (adminUser.role !== 'admin') {
+            return res.status(403).json({ msg: 'Acceso denegado' });
+        }
+
+        // No permitir que un administrador se elimine a sí mismo
+        if (req.params.id === req.user.id) {
+            return res.status(400).json({ msg: 'No puedes eliminar tu propia cuenta' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'Usuario no encontrado' });
+        }
+
+        await User.findByIdAndRemove(req.params.id);
+        res.json({ msg: 'Usuario eliminado correctamente' });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error del servidor');
